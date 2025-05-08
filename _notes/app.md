@@ -123,4 +123,14 @@ tags: [考试]
 
 ## 该写在cheat sheet上的东西
 
-1. 
+### 第七章
+
+第七章主要讲了图片音频和视频开发
+
+Image：有下面这么几种类型 （分别是压缩类型，多少位的色深，特点...）
+
+- JPEG （Joint Photographic Experts Group）(lossy compression，8-bit color depth，高质量但小文件，照片和网页照片，高性能压缩) 总色彩 = 256×256×256 = 16,777,216
+
+- PNG （Portable Network Graphics）（lossless compression，same，增加对alpha通道的支持，所以非常适合透明图像，含文字的网页图像或要清晰边缘的图像） 总色彩 = 256×256×256 = 16,777,216
+- GIF（Graphics Interchange Format）（lossless compression，八位色彩256种颜色，色彩有限，支持动画和透明，简单动画和图标类网页图像）
+- TIFF（Tagged Image File Format）
