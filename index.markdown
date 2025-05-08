@@ -16,7 +16,7 @@ title: 首页
   {% for note in site.notes limit:5 %}
     <article class="note-preview">
       <h2>
-        <a href="{{ note.url }}">{{ note.title }}</a>
+        <a href="{{ site.baseurl }}{{ note.url }}">{{ note.title }}</a>
       </h2>
       <div class="note-meta">
         <time datetime="{{ note.date | date_to_xmlschema }}">
@@ -33,7 +33,7 @@ title: 首页
 </div>
 
 <div class="view-all">
-  <a href="/notes" class="button">查看所有笔记</a>
+  <a href="{{ site.baseurl }}/notes" class="button">查看所有笔记</a>
 </div>
 
 <style>

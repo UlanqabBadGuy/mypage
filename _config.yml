@@ -22,8 +22,8 @@ title: 我的笔记本
 email: jerry.han428@gmail.com
 description: >- 
   这是我的个人笔记网站，用于记录和分享学习笔记、技术文档和个人思考。
-baseurl: "" 
-url: "https://github.com/UlanqabBadGuy" 
+baseurl: "/mypage"
+url: "https://ulanqabbadguy.github.io"
 github_username: UlanqabBadGuy
 
 # 网站设置
