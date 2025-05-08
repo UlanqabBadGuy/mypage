@@ -1,0 +1,92 @@
+@import "minima";
+
+// 自定义样式
+.note {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  
+  .note-header {
+    margin-bottom: 2rem;
+    
+    .note-title {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .note-meta {
+      color: #666;
+      font-size: 0.9rem;
+      
+      time, .categories, .tags {
+        margin-right: 1rem;
+      }
+      
+      a {
+        color: #0366d6;
+        text-decoration: none;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+  
+  .note-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    code {
+      background-color: #f6f8fa;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+    }
+    
+    pre {
+      background-color: #f6f8fa;
+      padding: 1rem;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  }
+  
+  .note-navigation {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    
+    a {
+      color: #0366d6;
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media screen and (max-width: 768px) {
+  .note {
+    padding: 1rem;
+    
+    .note-header {
+      .note-title {
+        font-size: 2rem;
+      }
+    }
+    
+    .note-content {
+      font-size: 1rem;
+    }
+  }
+} 
