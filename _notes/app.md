@@ -120,3 +120,7 @@ tags: [考试]
 | 文件格式 | .apk / .aab        | .ipa                         |
 
 ---
+
+## 该写在cheat sheet上的东西
+
+1. 

@@ -52,14 +52,3 @@ tags: [标签1, 标签2]
 \[
 \sum_{i=1}^n i = \frac{n(n+1)}{2}
 \]
-
-### 代码示例
-
-```python
-def hello_world():
-    print("Hello, World!")
-```
-
-## 结语
-
-开始记录你的笔记吧！ 
