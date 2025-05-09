@@ -4,12 +4,11 @@ title: "App Key Points"
 date: 2025-05-09
 categories: [介绍]
 tags: [考试]
-toc: true
-toc_label: "目录"
-toc_sticky: true
 ---
 
-[TOC]
+* Table of Contents
+{:toc}
+
 
 # 考试重点
 
