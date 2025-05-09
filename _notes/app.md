@@ -368,7 +368,7 @@ tags: [考试]
 | 服务层 | 文件、网络、定位、iCloud（Foundation, CoreLocation） |
 | 核心层 | 硬件访问、内存、底层网络（IOKit, CoreBluetooth）     |
 
-![ios_layer](../assets/images/ios_layer.png)
+![ios_layer](https://ulanqabbadguy.github.io/mypage/assets/images/ios_layer.png)
 
 ------
 
