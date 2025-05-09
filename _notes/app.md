@@ -960,8 +960,8 @@ aClass.anInstanceMethod()
 
 输出：
 
-```
-css复制编辑I am a class method
+```css
+I am a class method
 anInstanceMethod. Calling bClassMethod().
 I am a class method
 ```
@@ -971,3 +971,388 @@ I am a class method
 - `class func` 表示类方法（可直接用类名调用）
 - `func` 是实例方法，必须用对象来调用
 - 实例方法中也能调用类方法
+
+#### String
+
+可变字符串（Mutable String）
+
+```swift
+var S = "hi"
+var S: String = "hi"
+var S = String("hi")
+```
+
+说明：
+
+- 使用 `var` 声明字符串时，它是可变的。
+- 三种写法效果相同，最后一种显式调用构造函数。
+
+不可变字符串（Non-Mutable String）
+
+```swift
+let S = "hi"
+let S: String = "hi"
+let S = String("hi")
+```
+
+- 使用 `let` 声明后，该字符串不能再被修改。
+
+字符串长度获取
+
+- 使用 `count` 属性（Swift 5及以后）：
+
+```swift
+let length = S.count
+```
+
+ 查找子字符串
+
+```swift
+var S = "hello Swift"
+var range = S.range(of: "Swift")
+```
+
+说明：
+
+- `range` 返回一个可选类型 `Range<String.Index>?`
+- 若存在，`range` 表示子字符串的位置（起始和长度）
+- 类似 Objective-C 中的 `NSRange`。
+
+#### 基本数据类型数组（Array of Primitive Types）
+
+可变数组（Mutable）
+
+```swift
+var myArray: [Int] = [555, 666]
+var myArray = [555, 666]
+```
+
+常量数组（Constant）
+
+```swift
+let myArray: [Int] = [555, 666]
+let myArray = [555, 666]
+```
+
+说明：
+
+- `var` 可修改元素内容
+- `let` 则表示整个数组及其元素都不可变
+
+读取和写入元素
+
+```swift
+let val = myArray[0]         // 读取
+myArray[1] = 777             // 写入（需是 var 声明）
+```
+
+------
+
+对象数组（Array of Objects）
+
+可变对象数组（两种写法）：
+
+```swift
+// 方式一：初始化时就填入对象
+var myObjectArray: [Fireball] = [Fireball1, Fireball2]
+
+// 方式二：先声明空数组，后续 append
+var myObjectArray: [Fireball] = []
+myObjectArray.append(Fireball1)
+myObjectArray.append(Fireball2)
+```
+
+常量对象数组：
+
+```swift
+let myObjectArray: [Fireball] = [Fireball1, Fireball2]
+```
+
+遍历数组
+
+```swift
+for i in 0..<myObjectArray.count {
+    print("myObjectArray[\(i)].radius = \(myObjectArray[i].radius)")
+}
+```
+
+输出：
+
+```swift
+myObjectArray[0].radius = 6
+myObjectArray[1].radius = 4
+```
+
+数组总结说明
+
+- Swift 中数组类型定义为 `[Type]`。
+- 可存储对象，也可存储基本类型。
+- `.count` 可用于获取元素数量。
+- 对于对象数组，必须确保数组中所有元素类型一致。
+
+#### Optionals 的定义与用途
+
+在 Swift 中，Optional 是一种**可以存值也可以是 nil 的类型**。定义方式如下：
+
+```swift
+var name: String?  // 可能是字符串，也可能是 nil
+```
+
+Optional 的目的：
+
+- Swift 是 **强类型语言（Type-Safe）**，不能像 C/C++ 那样随便设置变量为 NULL。
+- 为了解决“值不存在”或“操作失败”时的处理，Swift 引入了 `Optional`。
+
+应用场景：
+
+- 某个属性**可有可无**
+- 某方法可能**找不到匹配项**
+- 某操作可能**失败或出错**
+- UI 组件（如 UILabel.text）**一开始就是 nil**
+- 管理大内存资源（可能需要临时释放）
+
+转换失败
+
+```swift
+let possibleNumber = "123a" //如果是“123”就转换成功了
+var convertedNumber: Int? = Int(possibleNumber)
+
+if convertedNumber != nil {
+    print("convertedNumber contains value: \(convertedNumber).")
+} else {
+    print("'\(possibleNumber)' cannot be converted to integer.")
+}
+```
+
+输出：
+
+> '123a' cannot be converted to integer.
+
+说明：
+
+- 字符串中带有 `a`，转换失败
+- `Int("123a")` 返回 nil
+- 可选类型优雅地捕捉了这种失败情况
+
+强解包
+
+```swift
+let possibleNumber = "1234"
+var convertedNumber: Int? = Int(possibleNumber)
+
+if convertedNumber != nil {
+    print("convertedNumber contains value \(convertedNumber!).")
+}
+```
+
+说明：
+
+- `convertedNumber!` 表示**强制解包（Forced Unwrapping）**
+- 编译器相信此时一定不是 nil（如果错了会程序崩溃）
+
+| 表达式         | 含义                          |
+| -------------- | ----------------------------- |
+| `var x: Int?`  | 声明一个可能为 nil 的整型变量 |
+| `x = 5`        | 赋值                          |
+| `x == nil`     | 判断是否为空                  |
+| `x!`           | 强制解包                      |
+| `if let y = x` | 安全解包（可选绑定）          |
+
+我们想在界面跳转（Segue）时，将一个文本框中的内容传递给下一个视图控制器进行使用。
+
+示例代码解析：
+
+```swift
+override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    print("enter prepare for segue …")
+
+    if (segue.identifier == "loginToGameBoardSeg") {
+        let nav = segue.destination as! UINavigationController
+        let vc = nav.topViewController as! GameBoardViewController
+        vc.setNavTitle(userNameTF.text!)
+    }
+}
+```
+
+逐句解释：
+
+`override func prepare(...)`
+
+- Swift 中，当你进行 segue（界面跳转）前，系统会自动调用这个方法。
+- 你可以在这里提前准备要传递的数据。
+
+`if (segue.identifier == "loginToGameBoardSeg")`
+
+- 判断跳转是否是我们命名的 `"loginToGameBoardSeg"`。
+- Segue 的标识符可以在 Storyboard 里设置。
+
+`let nav = segue.destination as! UINavigationController`
+
+- `segue.destination` 是跳转目的地的视图控制器。
+- 强制类型转换为 `UINavigationController`（⚠️ 用了 `as!` 强制转型）。
+- 如果转型失败，会导致运行时崩溃，开发中应谨慎使用（可用 `as?` 安全转型）。
+
+ `let vc = nav.topViewController as! GameBoardViewController`
+
+- 通过导航控制器获取其**顶部视图控制器**
+- 强制转型为我们自定义的 `GameBoardViewController`
+
+`vc.setNavTitle(userNameTF.text!)`
+
+- 将当前界面中的文本框 `userNameTF` 的文字传给下一个控制器。
+- `userNameTF.text!`：取出文本框内容（是 `String?` 类型，所以要解包）
+
+⚠️：使用 `!` 强制解包时，**一定要确保不为 nil**，否则会 crash。
+
+| 技术点                                     | 内容                     |
+| ------------------------------------------ | ------------------------ |
+| `prepare(for:sender:)`                     | 页面跳转前执行的数据准备 |
+| `as!`                                      | 强制类型转换             |
+| `text!`                                    | 可选类型强制解包         |
+| `UINavigationController.topViewController` | 获取导航栈最上层控制器   |
+
+#### UIImage & UIImageView (重要)
+
+| 类型          | 说明                                         |
+| ------------- | -------------------------------------------- |
+| `UIImage`     | 图像数据的高层抽象类，可以从文件或数据中创建 |
+| `UIImageView` | 显示图像的视图容器（可用于静态图或动画序列） |
+
+功能说明：
+
+- `UIImage` 处理图像数据（如从文件读取或网络下载）
+- `UIImageView` 是 View（可以被添加到界面上）
+- 动画功能：可设置图片序列、频率和动画控制（例如：帧动画）
+
+```swift
+// viewDidLoad() 方法回顾
+override func viewDidLoad() {
+    super.viewDidLoad()
+}
+// 在界面上显示第一张图片
+override func viewDidLoad() {
+    let myImage = UIImageView(image: UIImage(named: "puppy.jpeg"))
+    view.addSubview(myImage)
+    super.viewDidLoad()
+}
+// 添加第二张图片 与前面类似，只是加载第二张图片。此时，两张图片都显示在屏幕上（默认位置会重叠）。
+let myImage2 = UIImageView(image: UIImage(named: "tiger.png"))
+view.addSubview(myImage2)
+// set the location of pictures
+myImage2.center = CGPoint(x: 150, y: 200)
+// set the size of picture
+myImage2.frame = CGRect(x: 0, y: 0, width: 50, height: 25)
+// 如果写成了
+myImage2.center = CGPoint(x: 150, y: 200)
+myImage2.frame = CGRect(x: 0, y: 0, width: 50, height: 25)
+// 那么位置会被覆盖，正确顺序是
+myImage2.frame = CGRect(x: 0, y: 0, width: 50, height: 25)
+myImage2.center = CGPoint(x: 150, y: 200)
+// 因为 frame 会影响视图的整体边界，可能会改变中心点坐标。
+// 释放图像内存
+myImage.deallocate()
+myImage2.deallocate()
+```
+
+`viewDidLoad()` 是 UIViewController 的生命周期方法之一。
+
+类似于 Android 中的 `onCreate()` 方法。
+
+用于初始化界面、加载视图组件等操作。
+
+`UIImage(named:)` 从资源中加载名为 `"puppy.jpeg"` 的图片。
+
+`UIImageView(image:)` 创建一个图像视图组件。
+
+`view.addSubview(...)` 将图像视图添加到当前界面中（默认左上角对齐）
+
+CGPoint：
+
+- 是一个结构体，表示二维坐标
+- `x: 150, y: 200` 表示将图片中心定位到屏幕中的该点位置
+
+Swift 中 **不要求开发者手动释放内存**（使用 ARC 自动管理）。
+
+上面代码通常不需要写，写了也不会报错（只是示意）。
+
+只有极端性能需求下才会考虑手动释放。
+
+#### 触摸事件（Touching Events）
+
+```swift
+// 创建一个自定义视图 YourView，继承自 UIView
+class YourView: UIView {
+
+    // 用户手指刚触碰到屏幕时调用
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            // 获取触点在当前视图中的坐标
+            let currentPoint = touch.location(in: self)
+            // 示例操作：将图像移动到触点位置
+            image1.center = currentPoint
+        }
+    }
+
+    // 用户手指在屏幕上滑动时调用
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let currentPoint = touch.location(in: self)
+            image1.center = currentPoint
+        }
+    }
+
+    // 用户手指离开屏幕时调用
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let currentPoint = touch.location(in: self)
+            image1.center = currentPoint
+        }
+    }
+
+    // 处理多点触控：每个触控点的位置都可以被处理
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches {
+            let newLocation = touch.location(in: self)
+            // 示例：可用于绘制多指轨迹或多图像同步移动
+        }
+    }
+}
+
+```
+
+#### 练习
+
+```swift
+// 此为练习题解决方案的结构：创建一个带输入、按钮和标签的简单阶乘计算应用
+class ViewController: UIViewController {
+
+    // 输入框：用于接受用户输入的整数
+    @IBOutlet weak var inputTextField: UITextField!
+
+    // 标签：用于显示计算结果
+    @IBOutlet weak var resultLabel: UILabel!
+
+    // 按钮事件：用户点击后触发计算操作
+    @IBAction func calculateButtonPressed(_ sender: UIButton) {
+        // 使用可选绑定安全提取文本框中的字符串并转换为整数
+        if let inputText = inputTextField.text,
+           let number = Int(inputText) {
+
+            // 计算阶乘
+            var result = 1
+            for i in 1...number {
+                result *= i
+            }
+
+            // 更新结果显示
+            resultLabel.text = "Factorial: \(result)"
+
+        } else {
+            // 输入无效时的提示信息
+            resultLabel.text = "Please enter a valid integer."
+        }
+    }
+}
+
+```
+
