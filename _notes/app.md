@@ -127,9 +127,9 @@ tags: [考试]
 
 ## 该写在cheat sheet上的东西（NOT ALL of THEM）
 
-### 第七章
+### 第七章 图片音频和视频开发
 
-第七章主要讲了图片音频和视频开发
+第七章主要讲了 图片音频和视频开发
 
 - Image：有下面这么几种类型 （分别是压缩类型，多少位的色深，特点...）
 
@@ -175,7 +175,7 @@ tags: [考试]
 | **MOV** | 容器 | Apple 编码              | 中等     | ⚠ 需支持播放器 | Mac/iOS 视频编辑      | 高质量，苹果专属       |
 | **MKV** | 容器 | 多种（支持字幕/多音轨） | 中-大    | ⚠ 依赖播放器   | 高清电影、动漫        | 多轨、字幕、多平台支持 |
 
-### 第八章
+### 第八章 处理多线程和并发的问题（看起来比较重要）
 
 介绍移动应用中如何处理多线程和并发的问题。
 
@@ -341,7 +341,7 @@ tags: [考试]
    | 定时任务     | Handler + postDelayed       | Timer / DispatchSourceTimer |
    | 难点         | 多线程 UI 非线程安全        | FIFO队列控制任务顺序        |
 
-### 第九章 iOS Apps Development Environment概论
+### 第九章 iOS Apps Development Environment概论 （不是很重要）
 
 #### 一、iOS 开发生态与基本模式
 
@@ -543,3 +543,431 @@ struct ContentView: View {
 | 开发工具 | Xcode 使用、模拟器操作                            |
 | 导航跳转 | Navigation Controller 使用与多页面绑定            |
 | SwiftUI  | 声明式 UI 编程方法，@State 使用，跨平台优势与限制 |
+
+### 第十章 Swift Programming
+
+八个核心概念：Constant & Variable，Flow Control，Class，Function，String & Array，Optionals（可选类型），Image，Touching Events
+
+#### 第3–6页：常量与变量 Constant & Variable
+
+变量定义方式：
+
+Swift 中可以用 `var` 声明变量，其格式是：
+
+```swift
+var width: Int = 5
+```
+
+- `var`：表示变量
+- `width`：变量名
+- `Int`：类型
+- `5`：初始值
+
+也可以省略类型（类型推断）：
+
+```swift
+var width = 5
+```
+
+常量定义方式：
+
+使用 `let` 表示**不可变**：
+
+```swift
+let A = 10
+let message = "Hello World"
+```
+
+优势：
+
+- 更安全（不能被修改）
+- 编译器可以优化内存性能
+
+#### 第4–5页：基本数据类型（Primitive Data Types）
+
+| 类型        | 说明       | 示例                      |
+| ----------- | ---------- | ------------------------- |
+| `Int`       | 整型       | `var a: Int = 10`         |
+| `Float`     | 单精度浮点 | `var b: Float = -0.333`   |
+| `Double`    | 双精度浮点 | `var c = 0.333`           |
+| `Character` | 单个字符   | `var ch: Character = "c"` |
+| `String`    | 字符串     | `var str = "hi"`          |
+| `Bool`      | 布尔       | `var flag = true`         |
+
+#### 第6页：图像相关变量类型（Image-Specific Types）
+
+在GUI界面中用于图像展示的变量类型有：
+
+- `UIImageView`：用于展示一张图像
+- `UILabel`：用于展示只读文字
+- `UIButton`：用于触发交互事件的按钮
+
+这些类型本质是 Swift 中的类（Class），实例化后可以放置在屏幕上。
+
+#### 第7–10页：流程控制（Flow Control）
+
+Swift 提供多种流程控制结构，包括条件判断、循环等。
+
+**条件判断**
+
+```swift
+var a = 0
+var b = 1
+
+if (a < b) {
+    // 如果 a 小于 b，执行这里
+} else {
+    // 否则执行这里
+}
+```
+
+说明：
+
+- `if...else` 与 C/Java 相似。
+- 圆括号可以加也可以不加（Swift 不强制要求）。
+
+**循环结构**
+
+**1. For-in Loop**
+
+```swift
+for i in 0...b-1 {
+    // i = 0, 1, 2, ..., b-1
+}
+```
+
+- `0...b-1` 是闭区间操作符，等价于 `[0, b-1]`
+- 若使用 `..<` 则为左闭右开区间。
+
+**2. while Loop**
+
+```swift
+var count = 0
+while count < 10 {
+    print("count is \(count)")
+    count += 1
+}
+```
+
+**3. repeat-while Loop**
+
+```swift
+var count = 0
+repeat {
+    print("count is \(count)")
+    count += 1
+} while count < 10
+```
+
+- `repeat-while` 至少执行一次。
+
+#### 第11–14页：类（Class）基本用法
+
+面向对象范例（第12页）
+
+以游戏中的“火球”Fireball 为例：
+
+- 每个火球是一个对象（实例）
+- 拥有属性（x, y 坐标，半径）
+- 可以调用方法如 `move()` 进行移动
+
+类的定义（第13页）
+
+```swift
+class Fireball {
+    var centerX: Float
+    var centerY: Float
+    var radius: Float
+
+    init(centerX: Float, centerY: Float, radius: Float) {
+        self.centerX = centerX
+        self.centerY = centerY
+        self.radius = radius
+    }
+
+    func move(_ moveX: Float, _ moveY: Float) {
+        self.centerX += moveX
+        self.centerY += moveY
+    }
+
+    deinit {
+        // 析构函数，释放资源
+    }
+}
+```
+
+关键说明：
+
+- `init()` 是构造函数
+- `self` 表示当前实例（等价于 Java 的 `this`）
+- `deinit` 是析构函数（释放资源
+
+类的使用与可选类型（第14页）
+
+```swift
+var fireball1 = Fireball?
+fireball1 = Fireball(centerX: 7.0, centerY: 5.0, radius: 6.0)
+fireball1!.move(1.0, 1.0)
+```
+
+- `Fireball?` 是**可选类型**（optional），表明变量可能为 nil。
+- `!` 表示强制解包，告诉编译器“我确定这里不是 nil”。（nil约等于null）
+
+⚠️ 若实际为 nil 而强制解包会崩溃。
+
+#### 第15–17页：基本指针概念
+
+在 Swift 中，**对象（如 Fireball）通常在运行时动态创建（dynamic allocation）**，变量本质上存储的是指向内存中该对象的指针（即引用）。
+
+```swift
+var fireball1 = Fireball?
+fireball1 = Fireball(centerX: 10.0, centerY: 10.0, radius: 5.0)
+```
+
+说明：
+
+- `Fireball?` 是一个可以为 nil 的 Fireball 实例引用。
+- `fireball1` 实际上持有的是创建出来的对象的地址。
+- 使用 `!` 访问对象属性或方法：`fireball1!.move(1.0, 1.0)`
+
+#### 对象的创建和移除
+
+![对象的创建和移除](https://ulanqabbadguy.github.io/mypage/assets/images/ios_pointer.png)
+
+- 创建了两个 Fireball 实例，各自存放在内存中不同位置
+- 每次调用 `move()` 会修改对应对象的 `centerX`, `centerY`
+- 将 `fireball1`、`fireball2` 设为 `nil` 之后，原来的对象就失去引用，等待 ARC（自动引用计数）回收。
+
+#### 内存泄漏
+
+![内存泄漏](https://ulanqabbadguy.github.io/mypage/assets/images/mem_leaky.png)
+
+这里的问题是：**原本 fireball1 指向一个对象 A**，后续 fireball2 也指向 A，当 fireball1 和 fireball2 都设为 nil 时，如果有“循环引用”或 ARC 无法判断对象已无引用，内存将不会被释放，造成“Memory Leak”。
+
+#### “self” 关键字（类似 Java 的 this）
+
+当我们在类的方法中引用当前对象自身的属性或方法时，用 `self`：
+
+```swift
+class Fireball {
+    var centerX: Float
+    var centerY: Float
+
+    func move(_ dx: Float, _ dy: Float) {
+        self.centerX += dx
+        self.centerY += dy
+    }
+}
+```
+
+作用：
+
+- `self.centerX` 明确指出访问当前对象的 `centerX` 属性，避免变量命名冲突。
+- 图解展示：对象实例中包含一个隐式指针 `self` 指向自己。
+
+![self](https://ulanqabbadguy.github.io/mypage/assets/images/self.png)
+
+#### 第27页：函数的参数命名机制
+
+Swift 函数的每个参数既有**内部名称**（parameter name）也可以有**外部名称**（argument label）。
+
+```swift
+func someFunction(firstParameterName: Int, secondParameterName: Int) {
+    // 使用 firstParameterName 和 secondParameterName 进行计算
+}
+someFunction(firstParameterName: 1, secondParameterName: 2)
+```
+
+说明：
+
+- `firstParameterName` 是内部变量名（在函数体内使用）
+- 如果没有显式的 argument label，那么调用时也用内部名
+
+#### 第28页：使用外部参数名（Argument Label）
+
+```swift
+func someFunction(argumentLabel parameterName: Int) {
+    // 使用 parameterName
+}
+
+someFunction(argumentLabel: 7506)
+```
+
+- `argumentLabel` 是函数调用时用的名字
+- `parameterName` 是函数内部用的变量名
+- 两者通过冒号关联
+
+作用：使函数调用**更像自然语言**，提升可读性。
+
+#### 第29页：示例函数 greet
+
+```swift
+func greet(person: String, from hometown: String) -> String {
+    return "Hello \(person)! Glad you could visit from \(hometown)."
+}
+
+print(greet(person: "Bill", from: "Cupertino"))
+```
+
+结果输出：
+
+```csharp
+Hello Bill! Glad you could visit from Cupertino.
+```
+
+说明：
+
+- `from` 是外部参数名，`hometown` 是内部变量名
+
+#### 第30页：多个参数的外部命名
+
+```swift
+func sayHello(to person: String, and anotherPerson: String) -> String {
+    return "Hello \(person) and \(anotherPerson)!"
+}
+
+print(sayHello(to: "Bill", and: "Ted"))
+```
+
+说明：
+
+- `to` 和 `and` 是外部参数名，调用时必须使用。
+- 好处：使函数调用语义清晰
+
+#### 第31页：省略外部参数名（使用 `_`）
+
+```swift
+func someFunction(_ first: Int, second: Int) {
+    print(first, second)
+}
+
+someFunction(1, second: 2)
+```
+
+说明：
+
+- `_` 表示调用时不需要外部参数名
+
+#### 第32页：三种参数写法总结
+
+1. 带外部参数名：
+
+```swift
+func ABC(e1 i1: Int, e2 i2: Int) { ... }
+ABC(e1: 1, e2: 2)
+```
+
+1. 只有内部名（系统自动当作外部名）：
+
+```swift
+func ABC(i1: Int, i2: Int) { ... }
+ABC(i1: 1, i2: 2)
+```
+
+1. 无外部名：
+
+```swift
+func ABC(_ i1: Int, _ i2: Int) { ... }
+ABC(1, 2)
+```
+
+#### 第33页：默认参数值
+
+```swift
+func someFunction(parameterWithoutDefault: Int, parameterWithDefault: Int = 12) {
+    print(parameterWithoutDefault + parameterWithDefault)
+}
+
+someFunction(parameterWithoutDefault: 3) // 输出 15
+someFunction(parameterWithoutDefault: 3, parameterWithDefault: 6) // 输出 9
+```
+
+说明：
+
+- 默认值允许你在调用时省略参数
+- 默认参数必须放在**最后面**
+
+#### 第34页：可变参数（Variadic Parameter）
+
+```swift
+func arithmeticMean(_ numbers: Double...) -> Double {
+    var total: Double = 0
+    for number in numbers {
+        total += number
+    }
+    return total / Double(numbers.count)
+}
+
+arithmeticMean(1, 2, 3, 4, 5)  // 返回 3.0
+```
+
+说明：
+
+- 使用 `...` 表示该参数可以接收多个输入（类似 C 的 `...args`）
+- Swift 每个函数**最多只能有一个 variadic 参数**
+
+#### 第35页：inout 参数（可变引用）
+
+```swift
+func swapTwoInts(_ a: inout Int, _ b: inout Int) {
+    let temp = a
+    a = b
+    b = temp
+}
+```
+
+调用方式：
+
+```swift
+var x = 5
+var y = 10
+swapTwoInts(&x, &y)
+```
+
+说明：
+
+- 参数默认是常量，无法在函数体中修改
+- `inout` 参数允许函数修改调用者变量的值
+- 调用时需要加 `&` 表示传入的是**引用**
+
+#### 第37页：类方法与实例方法
+
+```swift
+class AClass {
+    class func aClassMethod() {
+        print("I am a class method")
+    }
+
+    class func bClassMethod() {
+        aClassMethod()
+    }
+
+    func anInstanceMethod() {
+        print("anInstanceMethod. Calling bClassMethod().")
+        AClass.bClassMethod()
+    }
+}
+```
+
+调用：
+
+```swift
+AClass.aClassMethod()
+
+let aClass = AClass()
+aClass.anInstanceMethod()
+```
+
+输出：
+
+```
+css复制编辑I am a class method
+anInstanceMethod. Calling bClassMethod().
+I am a class method
+```
+
+说明：
+
+- `class func` 表示类方法（可直接用类名调用）
+- `func` 是实例方法，必须用对象来调用
+- 实例方法中也能调用类方法
