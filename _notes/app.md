@@ -127,6 +127,357 @@ tags: [考试]
 
 ## 该写在cheat sheet上的东西（NOT ALL of THEM）
 
+### 前几章好像没什么东西
+
+### 第五章 安卓概论
+
+#### XML简介
+
+- XML 与 HTML 都源于 SGML（标准通用标记语言）
+- HTML 用于网页显示，XML 用于描述和存储数据结构
+- XML 格式规则：
+  - 标签成对出现，正确嵌套
+  - 单标签要以 `/` 结束
+  - 必须有且仅有一个根元素
+- XML 结构是一棵树（如 `<person>` 包含 `<name>`, `<email>`）
+
+#### Android Manifest 示例
+
+```xml
+<manifest package="com.example.helloandroid">
+    <application android:icon="@drawable/icon" android:label="@string/app_name">
+        <activity android:name=".HelloAndroid" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+```
+
+#### Hello World 示例
+
+- 使用 ConstraintLayout 居中显示 "Hello World"
+- activity_main.xml 中用 TextView，MainActivity.java 中通过 `setContentView()` 绑定布局
+- 使用 `EdgeToEdge.enable(this)` 和 `ViewCompat.setOnApplyWindowInsetsListener()` 处理系统窗口边缘
+
+#### Android Layout 基础
+
+- 每个View需要唯一ID，例如：`android:id="@+id/my_button"`
+- 常用布局：
+  - FrameLayout：控件重叠显示
+  - LinearLayout：控件线性排列（水平/垂直）
+  - RelativeLayout：控件相对排列（如`layout_below`）
+  - TableLayout：按行列布局，支持`layout_column`和`layout_span`
+  - ConstraintLayout：最新推荐，支持拖拽与约束定位
+
+#### ConstraintLayout常用约束
+
+```xml
+app:layout_constraintTop_toTopOf="parent"
+app:layout_constraintLeft_toRightOf="@id/buttonA"
+app:layout_constraintHorizontal_bias="0.3"
+```
+
+#### ScrollView用法
+
+```xml
+<ScrollView android:layout_width="match_parent" android:layout_height="match_parent">
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content"> ... </RelativeLayout>
+</ScrollView>
+```
+
+#### HCF Calculator示例（Design 1）
+
+- 全部逻辑写在 `MainActivity.java` 中，结构简单不够模块化
+- 通过 `EditText` 获取两个输入并转换为整数
+- 使用 `for` 循环遍历求最大公因数（Highest Common Factor）
+
+#### HCF Calculator（Design 2）
+
+- 将HCF计算逻辑抽出封装成 `Tools.java` 类
+- 更符合面向对象设计
+- 更符合 MVC 架构：
+  - Model：`Tools.java`
+  - View：布局XML
+  - Controller：`MainActivity.java`
+
+#### Android常见设计模式
+
+- MVC（Model-View-Controller）：本章示例采用
+- MVP（Model-View-Presenter）
+- MVVM（Model-View-ViewModel）
+
+#### 动态布局：ListView基础
+
+- ListView + Adapter + 数据
+- Adapter 类型：
+  - ArrayAdapter：只支持一行文字
+  - SimpleAdapter：支持复杂布局
+  - SimpleCursorAdapter：从数据库Cursor读取
+
+#### ListView 示例流程
+
+1. 布局文件使用 `ListView` 控件
+2. 每行布局定义在 `simplerow.xml`
+3. 主程序创建 `ArrayAdapter` 绑定数据源
+4. 调用 `listView.setAdapter(adapter)` 显示内容
+
+```java
+String[] planets = {"Mercury", "Venus", "Earth", ...};
+ArrayList<String> planetList = new ArrayList<>(Arrays.asList(planets));
+ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.simplerow, planetList);
+listView.setAdapter(adapter);
+```
+
+#### 尺寸单位说明
+
+| 单位     | 说明                       |
+| -------- | -------------------------- |
+| px       | 像素                       |
+| in       | 英寸                       |
+| mm       | 毫米                       |
+| pt       | 磅，1/72 英寸              |
+| dp / dip | 密度无关像素，推荐用于布局 |
+| sp       | 可缩放像素，推荐用于字体   |
+
+例如：
+
+```xml
+<dimen name="textsize">15sp</dimen>
+```
+
+Java代码中使用：
+
+```java
+textView.setTextSize(getResources().getDimension(R.dimen.textsize));
+```
+
+### 第六章 安卓基础
+
+#### Android Activity生命周期
+
+- onCreate()：进入内存
+- onStart()：变得可见
+- onResume()：获得焦点
+- onPause()：失去焦点
+- onStop()：不可见
+- onDestroy()：被销毁，离开内存
+
+注意：一个Activity可见但未必有焦点
+
+#### Activity之间的切换流程
+
+- A启动B：A的onPause()执行 → B的onCreate(), onStart(), onResume()执行 → 若A不再可见，onStop()也会执行
+- 写入数据库等应放在onPause()中执行
+
+#### Intent与Filter
+
+- Intent用于Activity、Service、BroadcastReceiver之间通信
+- 显式Intent：指定组件类名
+- 隐式Intent：指定动作，由系统匹配Filter决定目标
+
+#### 显式与隐式Intent示例
+
+```java
+// 显式
+Intent intent = new Intent(this, FooActivity.class);
+startActivity(intent);
+
+// 隐式
+Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+startActivity(intent);
+```
+
+#### 传递数据：基本类型
+
+```java
+Intent intent = new Intent(this, SecondActivity.class);
+intent.putExtra("ID", 7506);
+startActivity(intent);
+
+// 接收
+int id = getIntent().getIntExtra("ID", 0);
+```
+
+#### 传递数组与对象（需序列化）
+
+```java
+intent.putExtra("IntArray", myIntArray);
+intent.putExtra("Calendar", myCal);
+int[] arr = getIntent().getIntArrayExtra("IntArray");
+Calendar cal = (Calendar) getIntent().getSerializableExtra("Calendar");
+```
+
+#### 安全启动Intent（防止未找到目标组件）
+
+```java
+try {
+    startActivity(intent);
+} catch (ActivityNotFoundException e) {
+    // 处理异常
+}
+```
+
+#### Service服务概念
+
+- Service适合处理后台任务（不可见）
+- 与Activity的区别：UI/可见性
+- 多个Service可同时运行，Activity只能一个前台
+
+#### Service两种启动方式
+
+| 方式           | 特点                           |
+| -------------- | ------------------------------ |
+| startService() | 后台任务，无交互，不返回结果   |
+| bindService()  | 支持客户端交互，可获取服务对象 |
+
+#### Service生命周期简述
+
+- onCreate(): 初始化
+- onStartCommand(): 响应startService()
+- onBind(): 响应bindService()
+- onDestroy(): 释放资源
+
+#### startService()示例简述
+
+- 创建类继承Service并重写方法
+- 定义服务：
+
+```xml
+<service android:name=".MyService" />
+```
+
+- 启动：
+
+```java
+startService(new Intent(this, MyService.class));
+```
+
+- 停止：
+
+```java
+stopService(new Intent(this, MyService.class));
+```
+
+- 可通过返回值控制被杀后是否重启：
+
+```java
+return START_STICKY; // 自动重启但不重发Intent
+```
+
+#### bindService()示例简述
+
+- 创建ServiceBinder子类返回服务实例
+- 创建ServiceConnection对象处理绑定状态
+- 调用bindService()和unbindService()
+
+```java
+bindService(intent, serviceCon, Context.BIND_AUTO_CREATE);
+unbindService(serviceCon);
+```
+
+- 可通过服务调用方法交互
+
+#### Data Storage机制
+
+- 跨Activity或App数据共享
+- 方法：
+  - SharedPreferences（轻量级键值对）
+  - File I/O（本地私有文件）
+
+#### SharedPreferences示例
+
+```java
+// 读取
+SharedPreferences settings = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+boolean silent = settings.getBoolean("silentMode", false);
+
+// 写入
+SharedPreferences.Editor editor = settings.edit();
+editor.putBoolean("silentMode", true);
+editor.commit();
+```
+
+#### 文件读写（File I/O）
+
+```java
+// 写文件
+FileOutputStream fos = openFileOutput("hello.txt", Context.MODE_PRIVATE);
+fos.write("hello world".getBytes());
+fos.close();
+
+// 读文件
+FileInputStream fis = openFileInput("hello.txt");
+int c = fis.read();
+fis.close();
+```
+
+#### 简单图形：按钮控制图像左右移动
+
+- 使用RelativeLayout.LayoutParams获取和设置图像位置
+- 控制margin并判断边界
+
+```java
+par.leftMargin -= 5;  // 向左移动
+par.leftMargin += 5;  // 向右移动
+image.setLayoutParams(par);
+```
+
+- 获取屏幕宽度：
+
+```java
+Display display = getWindowManager().getDefaultDisplay();
+Point size = new Point();
+display.getSize(size);
+int screen_width = size.x;
+```
+
+#### 触控拖动图像
+
+- 设置OnTouchListener
+- 获取触摸位置：`event.getRawX()`, `event.getRawY()`
+- 更新图像位置：
+
+```java
+par.leftMargin = x - par.width / 2;
+par.topMargin = y - par.height / 2;
+image.setLayoutParams(par);
+```
+
+#### 背景音乐播放（MediaPlayer）
+
+```java
+MediaPlayer player = MediaPlayer.create(this, R.raw.xxx);
+player.start();      // 播放
+player.pause();      // 暂停
+player.stop();       // 停止
+```
+
+- 音频文件需放入 `res/raw` 目录
+
+#### 音效播放（SoundPool）
+
+- 小于1MB音频可用SoundPool更高效
+- 支持 `.ogg` 更好
+
+```java
+SoundPool soundPool;
+soundPool = new SoundPool.Builder().setMaxStreams(4).build();
+soundPoolMap.put(1, soundPool.load(this, R.raw.xxx, 1));
+soundPool.play(1, leftVol, rightVol, 1, 0, 1f);
+```
+
+- 使用AudioManager获取音量：
+
+```java
+AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+float leftVol = am.getStreamVolume(...) / am.getStreamMaxVolume(...);
+```
+
+---
+
 ### 第七章 图片音频和视频开发
 
 第七章主要讲了 图片音频和视频开发
@@ -744,72 +1095,152 @@ fireball1 = Fireball(centerX: 10.0, centerY: 10.0, radius: 5.0)
 
 这里的问题是：**原本 fireball1 指向一个对象 A**，后续 fireball2 也指向 A，当 fireball1 和 fireball2 都设为 nil 时，如果有“循环引用”或 ARC 无法判断对象已无引用，内存将不会被释放，造成“Memory Leak”。
 
+#### “self” 关键字（类似 Java 的 this）
+
+当我们在类的方法中引用当前对象自身的属性或方法时，用 `self`：
+
 ```swift
-// 示例：self 关键字，用于引用当前对象属性，类似 Java 中的 this
 class Fireball {
     var centerX: Float
     var centerY: Float
 
     func move(_ dx: Float, _ dy: Float) {
-        self.centerX += dx  // self 明确指定当前实例的属性
+        self.centerX += dx
         self.centerY += dy
     }
 }
+```
 
-// 函数参数命名机制：每个参数有内部名和可选的外部名
+作用：
+
+- `self.centerX` 明确指出访问当前对象的 `centerX` 属性，避免变量命名冲突。
+- 图解展示：对象实例中包含一个隐式指针 `self` 指向自己。
+
+![self](https://ulanqabbadguy.github.io/mypage/assets/images/self.png)
+
+#### 函数的参数命名机制
+
+Swift 函数的每个参数既有**内部名称**（parameter name）也可以有**外部名称**（argument label）。
+
+```swift
 func someFunction(firstParameterName: Int, secondParameterName: Int) {
     // 使用 firstParameterName 和 secondParameterName 进行计算
 }
 someFunction(firstParameterName: 1, secondParameterName: 2)
+```
 
-// 显式提供外部参数名（argument label）
+说明：
+
+- `firstParameterName` 是内部变量名（在函数体内使用）
+- 如果没有显式的 argument label，那么调用时也用内部名
+
+#### 使用外部参数名（Argument Label）
+
+```swift
 func someFunction(argumentLabel parameterName: Int) {
-    // parameterName 是函数内部使用的变量
+    // 使用 parameterName
 }
-someFunction(argumentLabel: 7506)  // 使用外部名调用函数
 
-// 更具可读性的函数命名风格
+someFunction(argumentLabel: 7506)
+```
+
+- `argumentLabel` 是函数调用时用的名字
+- `parameterName` 是函数内部用的变量名
+- 两者通过冒号关联
+
+作用：使函数调用**更像自然语言**，提升可读性。
+
+#### 示例函数 greet
+
+```swift
 func greet(person: String, from hometown: String) -> String {
     return "Hello \(person)! Glad you could visit from \(hometown)."
 }
-print(greet(person: "Bill", from: "Cupertino"))  // 输出 Hello Bill! Glad you could visit from Cupertino.
 
-// 多个参数的外部参数名
+print(greet(person: "Bill", from: "Cupertino"))
+```
+
+结果输出：
+
+```csharp
+Hello Bill! Glad you could visit from Cupertino.
+```
+
+说明：
+
+- `from` 是外部参数名，`hometown` 是内部变量名
+
+#### 多个参数的外部命名
+
+```swift
 func sayHello(to person: String, and anotherPerson: String) -> String {
     return "Hello \(person) and \(anotherPerson)!"
 }
-print(sayHello(to: "Bill", and: "Ted"))  // 输出 Hello Bill and Ted!
 
-// 使用下划线省略外部参数名
+print(sayHello(to: "Bill", and: "Ted"))
+```
+
+说明：
+
+- `to` 和 `and` 是外部参数名，调用时必须使用。
+- 好处：使函数调用语义清晰
+
+#### 省略外部参数名（使用 `_`）
+
+```swift
 func someFunction(_ first: Int, second: Int) {
     print(first, second)
 }
-someFunction(1, second: 2)  // 第一个参数不需要写标签
 
-// 三种函数参数定义方式总结
-func ABC(e1 i1: Int, e2 i2: Int) {
-    // 外部参数名 e1、e2；内部变量 i1、i2
-}
+someFunction(1, second: 2)
+```
+
+说明：
+
+- `_` 表示调用时不需要外部参数名
+
+#### 三种参数写法总结
+
+1. 带外部参数名：
+
+```swift
+func ABC(e1 i1: Int, e2 i2: Int) { ... }
 ABC(e1: 1, e2: 2)
+```
 
-func ABC(i1: Int, i2: Int) {
-    // 只有内部名，调用时也是外部名
-}
+1. 只有内部名（系统自动当作外部名）：
+
+```swift
+func ABC(i1: Int, i2: Int) { ... }
 ABC(i1: 1, i2: 2)
+```
 
-func ABC(_ i1: Int, _ i2: Int) {
-    // 没有外部参数名，调用时直接传值
-}
+1. 无外部名：
+
+```swift
+func ABC(_ i1: Int, _ i2: Int) { ... }
 ABC(1, 2)
+```
 
-// 默认参数值：未传入时使用默认值
+#### 默认参数值
+
+```swift
 func someFunction(parameterWithoutDefault: Int, parameterWithDefault: Int = 12) {
     print(parameterWithoutDefault + parameterWithDefault)
 }
-someFunction(parameterWithoutDefault: 3)                     // 输出 15
-someFunction(parameterWithoutDefault: 3, parameterWithDefault: 6) // 输出 9
 
-// 可变参数（Variadic Parameter）：接受任意个数的输入
+someFunction(parameterWithoutDefault: 3) // 输出 15
+someFunction(parameterWithoutDefault: 3, parameterWithDefault: 6) // 输出 9
+```
+
+说明：
+
+- 默认值允许你在调用时省略参数
+- 默认参数必须放在**最后面**
+
+#### 可变参数（Variadic Parameter）
+
+```swift
 func arithmeticMean(_ numbers: Double...) -> Double {
     var total: Double = 0
     for number in numbers {
@@ -817,19 +1248,38 @@ func arithmeticMean(_ numbers: Double...) -> Double {
     }
     return total / Double(numbers.count)
 }
-arithmeticMean(1, 2, 3, 4, 5)  // 返回 3.0
 
-// inout 参数：允许修改调用者的变量，需使用 & 引用传参
+arithmeticMean(1, 2, 3, 4, 5)  // 返回 3.0
+```
+
+说明：
+
+- 使用 `...` 表示该参数可以接收多个输入（类似 C 的 `...args`）
+- Swift 每个函数**最多只能有一个 variadic 参数**
+
+#### inout 参数（可变引用）
+
+```swift
 func swapTwoInts(_ a: inout Int, _ b: inout Int) {
     let temp = a
     a = b
     b = temp
 }
+```
+
+调用方式：
+
+```swift
 var x = 5
 var y = 10
-swapTwoInts(&x, &y)  // x = 10, y = 5
-
+swapTwoInts(&x, &y)
 ```
+
+说明：
+
+- 参数默认是常量，无法在函数体中修改
+- `inout` 参数允许函数修改调用者变量的值
+- 调用时需要加 `&` 表示传入的是**引用**
 
 #### 类方法与实例方法
 
@@ -1257,3 +1707,769 @@ class ViewController: UIViewController {
 
 ```
 
+### 第十一章 Sensor & Location Service（传感器与定位服务）不是很重要
+
+| 主题            | 简要说明                                                     | 详细补充说明                                                 |
+| --------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 传感器概览      | 移动设备与桌面设备区别：有传感器。需在真机上测试，不能用模拟器。 | 智能手机内建多种传感器使其能响应环境变化，如移动、光线、温度等。真机测试可验证功能是否真实有效。 |
+| 传感器分类      | 分为运动（如加速度计）、位置（如磁力计）、环境（如光照传感器）。 | 按功能分为三类：运动传感器用于检测设备移动或旋转，位置传感器检测方向或靠近，环境传感器感知周围自然环境。 |
+| 传感器实现      | 硬件传感器（真实器件）vs 软件传感器（计算生成，虚拟传感器）。 | 硬件传感器如陀螺仪是物理器件，数据较准确；软件传感器通过算法合成数据，计算量小但依赖基础传感器。 |
+| 低通滤波器      | 提取重力信号，平滑数据变化。指数滤波器常用：out = α·out + (1-α)·in。 | 低通滤波器用于保留长期稳定信号如重力，加权前一时刻输出与当前输入，平滑突变值。 |
+| 滤波代码示例    | 使用 onSensorChanged 事件分离重力与线性加速度。              | 通过事件回调函数onSensorChanged，使用指数加权方式提取重力，并从原始加速度中扣除它，得到线性加速度。 |
+| 传感器特性      | 需关注可用性、量程、精度、功耗等，影响设备适配与耗电。       | 不同设备拥有不同数量与种类的传感器，应在运行前检测是否存在。高功耗传感器应按需启用。 |
+| 误差来源        | 噪声：随机跳动；偏差：系统性误差，需校准或补偿。             | 噪声表现为数据随机波动，偏差为系统性误差。应使用滤波器减少噪声，用校准修正偏差。 |
+| 坐标系统        | 本地坐标系（手机自身）vs 世界坐标系（地球方向），对方向识别关键。 | 设备坐标系随设备方向而变，世界坐标系固定（如地理方向）。方向识别算法需考虑二者转换。 |
+| Manifest注册    | 声明传感器是否必须，建议非必需以增强兼容性。                 | 在AndroidManifest.xml中声明传感器是否为必须项，设置为false能增强程序兼容性。 |
+| 电量优化        | 监听器应在 onResume 注册，onPause 注销，避免后台耗电。       | 传感器在后台运行将持续耗电，应在生命周期函数onResume/onPause中注册与注销监听器。 |
+| 可用传感器      | 各设备和系统支持不同，常见如加速度计，稀有如温度计。         | 不同品牌设备搭载的传感器种类不同，部分如温度计并非所有型号都支持。应动态检查。 |
+| Sensor编程结构  | SensorManager 用于获取与管理传感器，需注册监听器。           | SensorManager提供访问传感器的接口，开发者可注册SensorEventListener来接收传感器事件。 |
+| 识别传感器      | getSensorList 获取全部；getDefaultSensor 获取指定类型。      | 调用getSensorList获取所有传感器列表；调用getDefaultSensor获取某种类型的默认传感器。 |
+| 监听器结构      | SensorEventListener 有两个方法：onSensorChanged 和 onAccuracyChanged。 | onSensorChanged用于接收新数据，onAccuracyChanged用于通知传感器精度变化，适用于需要高精度应用。 |
+| 监听器管理      | onResume/onPause 中注册注销监听器，避免持续耗电。            | 生命周期内注册监听器可减少功耗并避免内存泄漏，onResume中注册，onPause中注销。 |
+| 开发建议        | 不要假设传感器一定存在，避免堵塞回调函数，尽量真机测试。     | 建议：避免在监听器中执行耗时操作，始终检查设备是否支持传感器，不使用废弃接口。 |
+| 运动传感器      | 如加速度、陀螺仪等，识别移动、旋转等动作。                   | 加速度计用于检测沿xyz轴的线性加速度，陀螺仪用于测量旋转速率，是运动识别的基础。 |
+| 位置传感器      | 如距离、磁场传感器，识别方向、靠近耳朵等动作。               | 磁力计检测磁场强度，用于电子罗盘。距离传感器可用于自动熄屏、体感游戏等应用。 |
+| 环境传感器      | 检测温度、湿度、光照、气压等，用于自动调节或天气功能。       | 光照传感器自动调节亮度，温度/湿度/气压可用于气象、健康、模拟等应用。 |
+| iOS传感器       | CoreMotion 提供加速度、陀螺仪、磁力计、融合后的运动数据。    | Core Motion是iOS的传感器接口框架，提供融合后的高层数据，减少开发难度。 |
+| UIDevice API    | iOS中检测电量、朝向、接近等状态。                            | UIDevice类提供设备基本信息与传感器状态，如电量、方向、是否靠近用户等。 |
+| 定位原理        | 传感器不能直接提供全球定位，需结合外部来源（GPS、WiFi等）。  | 传感器本身无法得出全球定位信息，只能感知局部变化。需GPS、WiFi等外部信号配合定位。 |
+| GPS vs 网络定位 | GPS精度高但耗电，网络精度低但响应快，适用于不同场景。        | GPS精度高但耗电，网络定位快但误差大。可根据场景（导航/后台定位）动态切换。 |
+| 定位用途        | 打卡、推荐商店、导航等场景，常需周期更新或地理围栏触发。     | 定位用于地图、社交、商业提醒等场景，常与内容打标签或地理围栏联动使用。 |
+| Android定位API  | LocationManager 获取位置；LocationListener 接收更新。        | Android 中 LocationManager 负责位置服务，LocationListener 可接收位置信息更新。 |
+| 权限声明        | ACCESS_FINE/COARSE_LOCATION 权限；模拟器需 MOCK_LOCATION。   | Android 需声明定位权限（精确或粗略），模拟器测试时需开启ACCESS_MOCK_LOCATION。 |
+| iOS定位         | CoreLocation 框架使用 CLLocationManager 控制定位功能。       | iOS中使用CLLocationManager类处理标准定位、区域监听、信标扫描等功能。 |
+| 定位挑战        | 信号噪声、不规则用户行为、多种来源如何融合。                 | 用户行为不确定，定位信号可能受遮挡或漂移，应融合多源信息以提高鲁棒性。 |
+| 定位方法        | 通过与多个锚点（如GPS卫星）距离三角定位位置。                | 通过多个基站或卫星的信号距离交叉定位当前坐标，称为三角定位。 |
+| 地理围栏        | 注册进入/离开某地的事件，触发指定行为。                      | 开发者可设置特定位置触发事件，适合用于广告推送、游戏机关等地理围栏应用。 |
+| Google Map概述  | 可用于导航、交通、地图游戏等应用。                           | Google Maps SDK 支持路径规划、周边查询等服务，是基于位置的应用基础。 |
+| 申请地图API     | 登录开发者控制台启用 Maps SDK，生成 API Key。                | 通过Google Cloud Console注册地图服务，启用SDK并获取API Key，用于验证身份。 |
+| Android配置     | 需安装 Google Play Services SDK，使用模板或自行配置 XML/Java 文件。 | Android中需安装Google Play Services，模板工程可快速启用地图功能。 |
+| Map类型         | 普通、卫星、混合、地形图四种。                               | Google Maps支持四种地图类型，分别为道路图、卫星图、混合图与地形图。 |
+| Map功能设置     | 如启用交通图层、设置当前位置、添加标注等。                   | 可调用API设置交通图层、当前位置追踪、自定义标注（如HKU坐标与描述）。 |
+| iOS地图使用     | 需参照官方文档设置 iOS 端地图 SDK。                          | iOS开发地图功能需使用对应iOS SDK，配置过程类似，需申请API Key。 |
+| 穿戴设备数据    | 手机可接收来自智能手表的心率、步数等健康数据。               | 智能手表等穿戴设备能向手机发送健康数据，如步数、心率等，拓展数据源。 |
+| 心率测量原理    | 通过PPG（光电体积描记法）测量血液流动变化。                  | 通过光电传感器监测血液流动变化，识别脉搏频率计算心率。       |
+| 步数检测原理    | 加速度变化识别出“步频”与“峰值”节律。                         | 通过检测加速度变化中的规律峰值，识别连续步行动作，转换为步数。 |
+| 血压、血氧等    | 通过光学/电阻等方式估算，通常需人工校准。                    | 大多数智能手表能估算血压、血氧等健康指标，但需依赖光学、电阻等非传统方法，并需校准。 |
+| 总结            | 重点在如何将传感器/定位功能整合为创新应用，而非API调用本身。 | 如何利用传感器与定位数据创新是关键，应思考如何提升用户体验或产生新功能。 |
+
+### 第十二章 Server Connection
+
+#### 1. 移动App与服务器通信基础
+
+| 知识点              | 说明                                               | 补充                                          |
+| ------------------- | -------------------------------------------------- | --------------------------------------------- |
+| 获取/更新服务器数据 | 如香港天文台app、微信等                            | 服务端可使用ASP、JSP、PHP、Python、Java等技术 |
+| 通信模型            | App → HTTP请求 → Server处理 → HTTP响应 → App更新UI | 可带参数、读数据库或XML文件等                 |
+
+#### 2. Android网络访问设置
+
+##### Android权限声明
+
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+```
+
+##### 网络状态检测代码
+
+```java
+ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+if (networkInfo != null && networkInfo.isConnected()) {
+    // 网络可用
+}
+```
+
+##### 推荐网络库：Volley
+
+- 简化HTTP请求流程，文档：https://google.github.io/volley/
+
+#### 3. 获取网页内容的完整Android示例
+
+##### AndroidManifest权限配置
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+##### XML布局文件
+
+```xml
+<TextView android:id="@+id/myText" ... />
+```
+
+##### Java逻辑（核心流程）
+
+```java
+if (connMgr.getActiveNetworkInfo().isConnected()) {
+    downloadWebpage("https://www.hku.hk");
+}
+
+Executors.newSingleThreadExecutor().execute(() -> {
+    String result = downloadUrl(url);
+    new Handler(Looper.getMainLooper()).post(() -> textView.setText(result));
+});
+```
+
+##### 下载网页的函数实现
+
+```java
+private String downloadUrl(String myurl) throws IOException {
+    HttpURLConnection conn = (HttpURLConnection) new URL(myurl).openConnection();
+    conn.setRequestMethod("GET");
+    InputStream is = conn.getInputStream();
+    return readIt(is, 5000);
+}
+```
+
+#### 4. GET 与 POST 方法对比
+
+| 方法 | 特点                      | 示例                                    |
+| ---- | ------------------------- | --------------------------------------- |
+| GET  | 参数附加在URL后，长度有限 | `http://example.com/login.php?name=Tom` |
+| POST | 参数放在请求体内，更安全  | 适合传输敏感或大数据                    |
+
+#### 5. 使用PHP处理GET密码验证请求
+
+##### 示例PHP代码（samplephp.php）
+
+```php
+$correct_password = "secret";
+if (isset($_GET['password']) && $_GET['password'] === $correct_password) {
+    header("Location: page2.php");
+} else {
+    echo "Incorrect or missing password.";
+}
+```
+
+##### 页面跳转目标页（page2.php）
+
+```php
+<?php echo "Welcome to this protected page!"; ?>
+```
+
+#### 6. JSON数据解析（Java）
+
+##### 示例JSON结构
+
+```json
+{
+  "course_code": "COMP7506",
+  "teacher_1": "Dr. T.W. Chim",
+  "students": ["Anthony", "Ben"]
+}
+```
+
+##### Java解析示例
+
+```java
+JSONObject root = new JSONObject(JSONString);
+String teacher = root.getString("teacher_1");
+JSONArray students = root.getJSONArray("students");
+```
+
+#### 7. 使用正则表达式解析HTML
+
+##### Java代码解析Moodle源页面
+
+```java
+Pattern p = Pattern.compile("<h3 class=\"coursename\".*?>(.*?)</a>");
+Matcher m = p.matcher(htmlContent);
+while (m.find()) {
+    String course = m.group(1);
+}
+```
+
+#### 8. 嵌入网页：WebView组件（Android与iOS）
+
+##### Android WebView设置
+
+```xml
+<WebView android:id="@+id/webview" ... />
+WebView myWebView = findViewById(R.id.webview);
+myWebView.loadUrl("https://www.cs.hku.hk");
+```
+
+##### iOS WKWebView 示例（Swift）
+
+```swift
+let webView = WKWebView()
+let request = URLRequest(url: URL(string: "https://www.cs.hku.hk")!)
+webView.load(request)
+```
+
+#### 9. 响应式网页设计基础
+
+| 技术          | 说明                          | 示例                                                         |
+| ------------- | ----------------------------- | ------------------------------------------------------------ |
+| viewport      | 控制页面适配                  | `<meta name="viewport" content="width=device-width, initial-scale=1.0">` |
+| 图片自适应    | `max-width:100%` 保持图像比例 | `<img style="max-width:100%; height:auto;">`                 |
+| vw单位        | 文字随屏幕尺寸变化            | `font-size: 5vw;`                                            |
+| Media Queries | 针对不同分辨率调整样式        | `@media screen and (max-width:800px) { ... }`                |
+
+#### 10. JavaScript交互网页与WebView配合
+
+##### 温度转换网页（demo8）
+
+```html
+<input type="number" oninput="temperatureConverter(this.value)">
+<p id="outputCelcius"></p>
+<script>
+function temperatureConverter(val) {
+    document.getElementById("outputCelcius").innerHTML = (val - 32)/1.8;
+}
+</script>
+```
+
+##### Android启用JavaScript
+
+```java
+WebSettings webSettings = webView.getSettings();
+webSettings.setJavaScriptEnabled(true);
+```
+
+##### iOS启用（iOS 14前）
+
+```swift
+let preferences = WKPreferences()
+preferences.javaScriptEnabled = true
+```
+
+
+#### 11. WebView上传文件的小技巧
+
+- 原因：Android/iOS直接上传文件到CS服务器可能被拦截
+- 方法：通过网页表单嵌入WebView实现上传
+
+### 第十三章 Kotlin
+
+#### Kotlin 简介与历史背景
+
+| 内容                | 说明                                                         |
+| ------------------- | ------------------------------------------------------------ |
+| 官方支持            | 2017年Google宣布Kotlin成为Android官方开发语言                |
+| 特性                | Kotlin 是面向 JVM、Android、浏览器的静态类型语言             |
+| Android Studio 支持 | 从 3.0 起完全支持 Kotlin，支持 Java 转 Kotlin 自动转换（非100%准确） |
+
+#### Java 转 Kotlin 示例对比：HelloWorld
+
+```java
+// Java
+public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+}
+// Kotlin
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+    }
+}
+```
+
+> Kotlin 无分号，函数定义方式更简洁
+
+#### Kotlin 实战：最大公因数计算器（HCF Calculator）
+
+**XML布局**
+
+```xml
+<EditText android:id="@+id/txtbox1" ... />
+<EditText android:id="@+id/txtbox2" ... />
+<Button android:id="@+id/button1" ... android:text="FIND HCF" />
+<TextView android:id="@+id/lbl1" ... />
+```
+
+**Java 版主要逻辑：**
+
+```java
+button1.setOnClickListener(new OnClickListener() {
+    public void onClick(View v) {
+        int x = Integer.parseInt(txtbox1.getText().toString());
+        int y = Integer.parseInt(txtbox2.getText().toString());
+        int hcf = 1;
+        for (int i = 1; i <= x || i <= y; i++) {
+            if (x % i == 0 && y % i == 0) hcf = i;
+        }
+        tv.setText("HCF = " + hcf);
+    }
+});
+```
+
+**Kotlin 版等效代码：**
+
+```kotlin
+button1!!.setOnClickListener(clicker())
+
+internal inner class clicker : View.OnClickListener {
+    override fun onClick(v: View) {
+        val x = txtbox1!!.text.toString().toInt()
+        val y = txtbox2!!.text.toString().toInt()
+        var hcf = 1
+        var i = 1
+        while (i <= x || i <= y) {
+            if (x % i == 0 && y % i == 0) hcf = i
+            i++
+        }
+        tv!!.text = "HCF = $hcf"
+    }
+}
+```
+
+> 使用 `!!` 强制解引用（可能抛NPE）
+
+#### Java 与 Kotlin 示例对比
+
+| 示例     | Java                                       | Kotlin                   |
+| -------- | ------------------------------------------ | ------------------------ |
+| WebView  | 使用 `findViewById` + 设置 JavaScript 启用 | 类似但语法更简洁         |
+| 下载图片 | 用匿名内部类和 Handler                     | 使用 Lambda 与 `post {}` |
+
+#### Kotlin 与 Java 特性对比总结
+
+| 特性              | Java       | Kotlin                       |
+| ----------------- | ---------- | ---------------------------- |
+| Checked Exception | 有         | 无                           |
+| 数据类            | 写大量代码 | `data class` 即可            |
+| Null 安全         | 易出错     | 内建 null 检查与 `?.` 操作符 |
+| 扩展函数          | 无         | 有                           |
+| 协程              | 无         | 有                           |
+| 类型推导          | 无         | 有                           |
+| Smart Cast        | 无         | 有                           |
+| 静态成员          | 有         | 用 `companion object` 实现   |
+
+#### Kotlin 语言特性
+
+**函数定义：**
+
+```kotlin
+fun sum(a: Int, b: Int): Int = a + b
+fun calculate(num1: Int, num2: Int = 2, num3: Int = 4)
+```
+
+**可选命名参数调用：**
+
+```kotlin
+calculate(1, num3 = 5)
+```
+
+**变量定义：**
+
+```kotlin
+val a = 1  // 不可变
+var b = 2  // 可变
+```
+
+**数组与遍历：**
+
+```kotlin
+val num = arrayOf(1, 2, 3, 4)
+for (i in 0..num.size-1) println(num[i])
+```
+
+#### Null 安全机制
+
+| 用法         | 示例                                  |
+| ------------ | ------------------------------------- |
+| 非空类型     | `var s: String = "abc"`（不能为null） |
+| 可空类型     | `var s: String? = null`               |
+| 安全调用     | `s?.length`                           |
+| Elvis 操作符 | `val len = s?.length ?: 0`            |
+| 强制调用     | `s!!.length`（若为 null 会抛异常）    |
+
+#### 字符串插值
+
+```kotlin
+val name = "Kotlin"
+println("Hello $name!")
+```
+
+#### 类与构造器
+
+```kotlin
+class Person(val name: String, val age: Int? = null) {
+    init { println("Hello, I'm $name") }
+}
+```
+
+**次构造器：**
+
+```kotlin
+class Car(val id: String, val type: String) {
+    constructor(id: String): this(id, "unknown")
+}
+```
+
+#### 类继承与访问控制
+
+- 默认类是 final 的，需用 `open` 才能继承
+- 使用 `override` 重写父类方法
+- 静态成员通过 `companion object` 实现
+
+#### 类继承综合示例（Person / Student / Lecturer / University）
+
+**父类 Person：**
+
+```kotlin
+open class Person(val name: String, val age: Int, val gender: String) {
+    companion object { var numOfPerson = 0 }
+    init { numOfPerson++ }
+    open fun getInfo(): String = "No information"
+}
+```
+
+**子类 Student 与 Lecturer：**
+
+```kotlin
+class Student(...) : Person(...) {
+    private val courseList = ArrayList<String>()
+    override fun getInfo(): String { ... }
+}
+
+class Lecturer(...) : Person(...) {
+    override fun getInfo(): String { ... }
+}
+```
+
+**组合类 University：**
+
+```kotlin
+class University {
+    private val people = ArrayList<Person>()
+    fun addPerson(person: Person) { people.add(person) }
+    fun getInfo(): String = people.joinToString("\n") { it.getInfo() }
+}
+```
+
+### 第十四章 UI design
+
+#### 用户的界面期望
+
+- 用户希望App是**简单、快速响应、任务导向的**
+- 希望能快速完成特定任务，尤其在移动场景下
+- 用户界面应简洁直观，并能提供及时反馈
+- 能尽量**自动化操作**
+
+#### 用户不希望的体验
+
+- 不希望等待
+- 不希望猜测系统行为
+- 不愿意花时间找按钮、菜单或信息
+- 不希望频繁重新配置App以适应网络环境变化
+
+#### 用户控制感
+
+- 应用要让用户感觉**“掌控全局”**
+- 提供多种方式完成任务（步骤越少越好）
+- 允许个性化定制
+- 支持撤销或恢复非关键错误
+
+#### 什么是用户界面设计
+
+- 是以用户体验为核心的界面与交互设计
+- 包括硬件、软件、网页与移动端应用
+
+#### 本章目标
+
+- 提供UI设计的一般原则
+- 探讨不同交互方式
+- 图形/文本信息如何选用
+- UI设计的流程
+- 可用性评价的方法与指标
+
+#### 用户界面设计基本原则
+
+- **用户熟悉度**：使用用户熟悉的术语和概念
+- **一致性**：命令、菜单、格式风格要统一
+- **最小惊讶原则**：用户不应对系统行为感到意外
+- **可恢复性**：如撤销、确认删除、错误提示等
+- **用户引导**：提供明确反馈与上下文帮助
+- **用户多样性**：如为视力差的用户提供大字体等功能
+
+#### 移动设备界面设计要点
+
+- 无鼠标键盘，手指输入
+- 文字输入困难、精度低
+- 不应使用过多表单和控件
+- 设计应简洁、与Web版一致（颜色、风格等）
+
+#### 移动UI通用设计建议
+
+- 只显示必要数据与关键控件
+- 控件应易于辨识、查找、使用
+- 控件设计应具**一致性与可预测性**
+- 控件间应有空隙防止误操作
+- 避免复杂风格或过度美化
+- 使用系统标准控件（如虚拟键盘）
+
+#### 设计通用法则
+
+- **KISS**（Keep It Simple, Stupid）
+- **80/20 Rule**：80%功能使用集中于20%
+- **Poka-Yoke原则**：防止误操作
+- **Satisficing**：满意 + 足够 = 用户不需最优但需“够用”
+- **渐进披露（Progressive Disclosure）**：按需展示更多内容
+
+#### 人机交互设计定律
+
+- **Fitt’s Law**：控件越大越近越容易点中
+  - 界面角落和边缘是“无限大”的目标
+- **Hick’s Law**：决策时间与选项数量成正比
+  - 层级过深、菜单太多都降低效率
+
+#### 用户认知定律
+
+- **Magic Number 7 ± 2**：人类短时记忆容量为7个左右单位
+- **Tesler’s Law（复杂度守恒）**：系统总复杂度不变，只是开发者或用户承担
+
+#### 菜单设计建议
+
+- 只展示必要内容
+- 排序应按**使用频率**
+- 避免多层嵌套菜单
+- 常用功能直接放菜单栏
+- 移动版菜单应模仿桌面网页顺序
+
+#### 用户界面设计流程
+
+1. 分析并理解用户活动
+2. 纸上原型设计
+3. 动态原型设计
+4. 可执行原型
+5. 与用户反复测试评估
+6. 实现最终UI
+
+#### Paper Prototype 原型设计
+
+- 用手绘草图模拟界面交互
+- 用于沟通设计思路（设计者、开发者、用户）
+- 用于可用性测试（在开发前验证交互方式）
+
+#### 用户-系统交互的两个核心问题
+
+- 用户信息如何输入到系统中？
+- 系统信息如何呈现给用户？
+
+#### 可视化设计要素
+
+- 色彩
+- 图标/卡通图像
+- 字体类型
+- 元素大小（可视性与缩放性）
+- 亮度与对比度
+
+#### 色彩心理学（Color Psychology）
+
+- 不同颜色给人不同的心理感受
+- 可用来营造愉悦、紧张、安全、警告等氛围
+- 建议阅读资料：
+  - [Color Psychology in UI/UX Design](https://medium.com/@designbyshadow/color-psychology-in-ui-ux-design-understanding-the-emotional-impact-of-colors-b0f2d2ec8484)
+
+### 第十五章 发布与测试
+
+#### 本章结构
+
+- App测试类型
+- Android与iOS测试方法
+- 安全测试与Monkey工具
+- 数字签名与证书
+- Android APK签名与上传流程
+- iOS签名与发布流程
+
+#### App测试指标分类
+
+| 前端性能指标 | 后端性能指标          |
+| ------------ | --------------------- |
+| App加载时间  | Server负载            |
+| 响应时间     | API延迟（如Cloud/AI） |
+| 屏幕渲染效率 | 首字节时间（TTFB）    |
+| 后台任务处理 | HTTP请求数            |
+| 崩溃频率     | DNS查询数             |
+| 电池消耗     | 吞吐量                |
+| 内存占用     | –                     |
+| 硬件兼容性   | –                     |
+
+#### 功能性测试
+
+- 验证App功能是否按照预期运作
+- 包含输入-输出测试（IO测试）
+- 包含用户验收测试（UAT）即Beta测试
+- 常见方法：
+  - 烟雾测试（Smoke Testing）
+  - 回归测试（Regression Testing）
+
+#### 非功能性测试
+
+- 测试非业务逻辑相关的性能指标
+- 包括：
+  - 兼容性测试：多设备、OS、网络环境
+  - 用户体验、资源使用等方面
+
+#### 服务端测试类型
+
+- 压力测试（Stress Testing）：极端条件下是否崩溃
+- 容量测试（Capacity Testing）：系统最大承载用户数
+- 体积/洪水测试（Volume/Flood Testing）：处理大数据是否稳定
+- 峰值测试（Spike Testing）：突然增加负载是否稳定
+
+#### 压力测试步骤
+
+1. 规划目标与负载参数
+2. 创建自动化脚本（如JMeter、LoadRunner）
+3. 执行脚本，渐进/瞬时加载
+4. 记录性能指标、错误、瓶颈
+5. 优化后回归测试
+
+#### 安全测试（渗透测试）
+
+- 模拟攻击找出漏洞
+- 典型问题：
+  - 使用不安全组件
+  - 权限过度
+  - API或后端无防护
+- 工具示例：MobSF（Mobile Security Framework）
+  - 可分析Android/iOS安全问题
+
+#### Android输入测试工具：Monkey
+
+- Monkey模拟用户点击、滑动等行为
+- 四类配置参数：
+  - 基本参数（事件数量）
+  - 运行限制（指定package）
+  - 事件类型频率
+  - Debug选项
+
+#### Monkey运行与示例
+
+执行命令（Mac/Linux加 `./`）：
+
+```bash
+adb -e shell monkey --ignore-crashes -p hk.hkucs.hcfcalculator 1000 > test_logs.txt
+```
+
+含义：
+
+- `-e`: 模拟器
+- `--ignore-crashes`: 出现崩溃也继续
+- `-p`: 指定包名
+- `1000`: 事件数量
+- `> test_logs.txt`: 保存日志
+
+#### Monkey输出与异常处理示例
+
+```java
+try {
+  x = Integer.parseInt(a);
+  y = Integer.parseInt(b);
+} catch (NumberFormatException e) {
+  // 处理异常
+}
+```
+
+使用 `try-catch-finally` 捕捉风险操作（如用户乱输字符）
+
+#### 真机测试（Android）
+
+- 用USB连接设备
+- 开启开发者模式（不同品牌略有差异）
+- Android Studio中可选择设备进行APK安装与测试
+
+#### 公钥加密机制
+
+- 每用户一对密钥：公钥公开、私钥保密
+- 加密用公钥，解密需私钥
+- 防止第三方伪造或篡改消息
+
+#### 加密摘要函数（Hash Function）
+
+- 输入 → 固定长度输出（摘要）
+- 不可逆：不可由摘要推回原始信息
+- 校验完整性（相同输入 → 相同摘要）
+
+#### 数字签名与证书
+
+- 签名=摘要+私钥
+- 接收者用发送者公钥验证
+- App发布签名原理一致
+- 证书由CA签发（如Google/Apple官方）
+
+#### Android APK签名与发布
+
+- 未签名APK在 `app/build/intermediates/apk/debug`
+- 要发布必须签名：
+  - Android Studio中：Build → Generate Signed Bundle/APK
+  - 创建密钥库、设置 key alias 和密码
+
+默认签名路径：
+
+```plaintext
+<project_root>/app/
+```
+
+#### build.gradle 中的配置示例
+
+```gradle
+defaultConfig {
+    applicationId = "hk.hkucs.hcfcalculator"
+    minSdk = 24
+    targetSdk = 35
+    versionCode 6
+    versionName "1.5"
+}
+```
+
+- `versionCode` 每次提交需 +1（整数）
+- `versionName` 可如 1.0 → 1.1（小更新）/ 2.0（大更新）
+
+#### 上传到 Google Play 流程
+
+1. 注册开发者账号（$25 USD 终身）
+2. 登录 Google Play Console
+3. 点击 "Create app"
+4. 提供基本信息、截图、Banner等
+5. 可选择：
+   - Internal Testing（100人内测）
+   - Closed Testing（受控组测试）
+   - Open Testing（公开Beta）
+6. 最终发布后可查看稳定性、安装量等
+
+#### iOS应用发布机制
+
+- 每个可运行App必须“签名”
+- 安装测试设备前必须：
+  - 拥有开发者证书
+  - 创建 Provisioning Profile（包含设备ID + App ID + 证书）
+
+#### 证书类型回顾（常见）
+
+| 类型             | 用途                     |
+| ---------------- | ------------------------ |
+| iOS Development  | 开发测试                 |
+| iOS Distribution | 上架或Ad Hoc发布         |
+| Mac Development  | macOS开发                |
+| Developer ID     | 非App Store分发（仅Mac） |
+
+#### iOS签名流程
+
+1. 打开 Keychain Access，生成 `.csr` 文件
+2. 上传到 Apple Developer，下载 `.cer` 证书
+3. 创建 Provisioning Profile，包含设备列表与证书
+4. 使用 Xcode 打包为 `.ipa` 并签名
+5. 可用 Apple Configurator 或拖入 Xcode 安装测试
+
+#### iOS App 发布流程
+
+- 生成 Distribution 类型证书
+- 创建分发专用的 Provisioning Profile
+- 提交到 App Store 前，Xcode 会自动重新签名
+- App Store 审核通过后，不再包含profile，所有设备可安装
+
+#### iOS 审核标准
+
+- 官方审核地址：https://developer.apple.com/app-store/review/guidelines/
+- 内容审查较严格，需符合Apple准则
