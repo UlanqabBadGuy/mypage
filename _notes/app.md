@@ -744,152 +744,72 @@ fireball1 = Fireball(centerX: 10.0, centerY: 10.0, radius: 5.0)
 
 这里的问题是：**原本 fireball1 指向一个对象 A**，后续 fireball2 也指向 A，当 fireball1 和 fireball2 都设为 nil 时，如果有“循环引用”或 ARC 无法判断对象已无引用，内存将不会被释放，造成“Memory Leak”。
 
-#### “self” 关键字（类似 Java 的 this）
-
-当我们在类的方法中引用当前对象自身的属性或方法时，用 `self`：
-
 ```swift
+// 示例：self 关键字，用于引用当前对象属性，类似 Java 中的 this
 class Fireball {
     var centerX: Float
     var centerY: Float
 
     func move(_ dx: Float, _ dy: Float) {
-        self.centerX += dx
+        self.centerX += dx  // self 明确指定当前实例的属性
         self.centerY += dy
     }
 }
-```
 
-作用：
-
-- `self.centerX` 明确指出访问当前对象的 `centerX` 属性，避免变量命名冲突。
-- 图解展示：对象实例中包含一个隐式指针 `self` 指向自己。
-
-![self](https://ulanqabbadguy.github.io/mypage/assets/images/self.png)
-
-#### 第27页：函数的参数命名机制
-
-Swift 函数的每个参数既有**内部名称**（parameter name）也可以有**外部名称**（argument label）。
-
-```swift
+// 函数参数命名机制：每个参数有内部名和可选的外部名
 func someFunction(firstParameterName: Int, secondParameterName: Int) {
     // 使用 firstParameterName 和 secondParameterName 进行计算
 }
 someFunction(firstParameterName: 1, secondParameterName: 2)
-```
 
-说明：
-
-- `firstParameterName` 是内部变量名（在函数体内使用）
-- 如果没有显式的 argument label，那么调用时也用内部名
-
-#### 第28页：使用外部参数名（Argument Label）
-
-```swift
+// 显式提供外部参数名（argument label）
 func someFunction(argumentLabel parameterName: Int) {
-    // 使用 parameterName
+    // parameterName 是函数内部使用的变量
 }
+someFunction(argumentLabel: 7506)  // 使用外部名调用函数
 
-someFunction(argumentLabel: 7506)
-```
-
-- `argumentLabel` 是函数调用时用的名字
-- `parameterName` 是函数内部用的变量名
-- 两者通过冒号关联
-
-作用：使函数调用**更像自然语言**，提升可读性。
-
-#### 第29页：示例函数 greet
-
-```swift
+// 更具可读性的函数命名风格
 func greet(person: String, from hometown: String) -> String {
     return "Hello \(person)! Glad you could visit from \(hometown)."
 }
+print(greet(person: "Bill", from: "Cupertino"))  // 输出 Hello Bill! Glad you could visit from Cupertino.
 
-print(greet(person: "Bill", from: "Cupertino"))
-```
-
-结果输出：
-
-```csharp
-Hello Bill! Glad you could visit from Cupertino.
-```
-
-说明：
-
-- `from` 是外部参数名，`hometown` 是内部变量名
-
-#### 第30页：多个参数的外部命名
-
-```swift
+// 多个参数的外部参数名
 func sayHello(to person: String, and anotherPerson: String) -> String {
     return "Hello \(person) and \(anotherPerson)!"
 }
+print(sayHello(to: "Bill", and: "Ted"))  // 输出 Hello Bill and Ted!
 
-print(sayHello(to: "Bill", and: "Ted"))
-```
-
-说明：
-
-- `to` 和 `and` 是外部参数名，调用时必须使用。
-- 好处：使函数调用语义清晰
-
-#### 第31页：省略外部参数名（使用 `_`）
-
-```swift
+// 使用下划线省略外部参数名
 func someFunction(_ first: Int, second: Int) {
     print(first, second)
 }
+someFunction(1, second: 2)  // 第一个参数不需要写标签
 
-someFunction(1, second: 2)
-```
-
-说明：
-
-- `_` 表示调用时不需要外部参数名
-
-#### 第32页：三种参数写法总结
-
-1. 带外部参数名：
-
-```swift
-func ABC(e1 i1: Int, e2 i2: Int) { ... }
+// 三种函数参数定义方式总结
+func ABC(e1 i1: Int, e2 i2: Int) {
+    // 外部参数名 e1、e2；内部变量 i1、i2
+}
 ABC(e1: 1, e2: 2)
-```
 
-1. 只有内部名（系统自动当作外部名）：
-
-```swift
-func ABC(i1: Int, i2: Int) { ... }
+func ABC(i1: Int, i2: Int) {
+    // 只有内部名，调用时也是外部名
+}
 ABC(i1: 1, i2: 2)
-```
 
-1. 无外部名：
-
-```swift
-func ABC(_ i1: Int, _ i2: Int) { ... }
+func ABC(_ i1: Int, _ i2: Int) {
+    // 没有外部参数名，调用时直接传值
+}
 ABC(1, 2)
-```
 
-#### 第33页：默认参数值
-
-```swift
+// 默认参数值：未传入时使用默认值
 func someFunction(parameterWithoutDefault: Int, parameterWithDefault: Int = 12) {
     print(parameterWithoutDefault + parameterWithDefault)
 }
-
-someFunction(parameterWithoutDefault: 3) // 输出 15
+someFunction(parameterWithoutDefault: 3)                     // 输出 15
 someFunction(parameterWithoutDefault: 3, parameterWithDefault: 6) // 输出 9
-```
 
-说明：
-
-- 默认值允许你在调用时省略参数
-- 默认参数必须放在**最后面**
-
-#### 第34页：可变参数（Variadic Parameter）
-
-```swift
+// 可变参数（Variadic Parameter）：接受任意个数的输入
 func arithmeticMean(_ numbers: Double...) -> Double {
     var total: Double = 0
     for number in numbers {
@@ -897,40 +817,21 @@ func arithmeticMean(_ numbers: Double...) -> Double {
     }
     return total / Double(numbers.count)
 }
-
 arithmeticMean(1, 2, 3, 4, 5)  // 返回 3.0
-```
 
-说明：
-
-- 使用 `...` 表示该参数可以接收多个输入（类似 C 的 `...args`）
-- Swift 每个函数**最多只能有一个 variadic 参数**
-
-#### 第35页：inout 参数（可变引用）
-
-```swift
+// inout 参数：允许修改调用者的变量，需使用 & 引用传参
 func swapTwoInts(_ a: inout Int, _ b: inout Int) {
     let temp = a
     a = b
     b = temp
 }
-```
-
-调用方式：
-
-```swift
 var x = 5
 var y = 10
-swapTwoInts(&x, &y)
+swapTwoInts(&x, &y)  // x = 10, y = 5
+
 ```
 
-说明：
-
-- 参数默认是常量，无法在函数体中修改
-- `inout` 参数允许函数修改调用者变量的值
-- 调用时需要加 `&` 表示传入的是**引用**
-
-#### 第37页：类方法与实例方法
+#### 类方法与实例方法
 
 ```swift
 class AClass {
