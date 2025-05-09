@@ -127,7 +127,368 @@ tags: [考试]
 
 ## 该写在cheat sheet上的东西（NOT ALL of THEM）
 
-### 前几章好像没什么东西
+### 第一章
+
+#### Android架构与运行机制（Architecture）
+
+Android 是一个基于 Linux 的开放移动平台，架构分层如下：
+
+1. **Linux 内核层（Kernel Layer）**
+   - 提供核心系统服务，如内存管理、进程管理、网络协议栈、设备驱动（如摄像头、蓝牙、WiFi）
+
+2. **原生库层（Native Libraries）**
+   - 由C/C++实现，如：
+     - **Surface Manager**：管理显示层次
+     - **OpenGL/Skia**：2D/3D图形渲染
+     - **SQLite**：轻量级数据库
+     - **WebKit**：网页引擎
+
+3. **Android 运行时层**
+   - 旧版本为 **Dalvik VM**，采用解释执行+JIT技术
+   - 新版本使用 **ART（Android Runtime）**：
+     - AOT 编译：安装时将字节码一次性编译为机器码，提升执行效率
+     - 优化内存分配与垃圾回收
+     - 降低能耗，提升续航
+
+4. **应用框架层（Application Framework）**
+   - 提供开发接口，如Activity Manager、Content Provider、Notification Manager等
+
+5. **应用层（Application Layer）**
+   - 用户安装的所有App
+
+**安全机制**：
+
+- 每个应用独立运行于单独的进程，由唯一的 UID 标识
+- 权限管理系统（如访问通讯录、相机等需显式声明）
+- 支持基于URI的精细访问控制
+
+**开发语言**：
+
+- 主流支持：Java / Kotlin（Kotlin为官方推荐）
+- 本地层可用C/C++，通过JNI调用
+
+#### MIUI 与 HyperOS：小米移动操作系统的演进
+
+- **MIUI**：基于Android定制的ROM，2010年发布，最早基于Android 2.2
+  - 区域版差异显著（中国/全球/EEA/印度等）
+  - **中国版本无Google服务**，国际版预装Gmail/Play等，且通过Google认证
+- **HyperOS**：2023年起取代MIUI，作为下一代系统
+  - 提升性能与电池寿命
+  - UI更简洁、响应更快
+  - 统一跨设备系统体验（手机+平板+IoT）
+
+#### HarmonyOS（华为鸿蒙系统）
+
+- 首发：2019年9月，由华为开发
+- 特点：
+  - **分布式操作系统**：可部署在手机、电视、车机、IoT等多种终端
+  - App格式为 `.app` 包含 `.hap`（Harmony Ability Package）模块
+  - 无需APK，采用“能力驱动”模型
+
+**开发工具包（Kits）示例**：
+
+- **Account Kit**：便捷登录功能
+- **Location Kit**：高精度定位
+- **Machine Learning Kit**：内嵌AI服务
+- **Push Kit**：推送消息
+- **Wallet Kit**：数字化票据/支付系统集成
+
+#### iOS 操作系统结构简述
+
+- Apple 旗下系统，发布于2007年，现用于iPhone、iPad、Apple Watch等
+- 核心语言：Objective-C（传统）、Swift（现代）
+- Game Center 提供游戏社交功能（排行榜、好友对战）
+- 与Android不同，**iOS是封闭生态**，App只能通过App Store发布
+
+#### 移动用户体验设计八大原则（UX Design Principles）
+
+1. **去除杂乱**：每屏只展示一个核心动作
+2. **直观导航**：用户无需思考即可知道“在哪、去哪”
+3. **一致性体验**：手机、平板、桌面使用行为一致
+4. **手指友好**：目标控件建议大于7mm，避免误触
+5. **可读性**：最小11pt字体，推荐系统默认字体（如Roboto、Helvetica Neue）
+6. **对比明确**：遵循W3C推荐，小文字对比度≥4.5:1，大字体≥3:1
+7. **手势区友好**：重要按钮放置在拇指舒适区
+8. **减少打字**：利用自动补全、默认值等降低输入负担
+
+#### 移动用户体验的约束（UX Constraints）
+
+1. **客户端存储限制**：频率决定存留，功能强≠常驻
+2. **屏幕小&输入难**：虚拟键盘劝退用户，注册过长用户可能直接退出
+3. **干扰环境多**：易中断，需唤醒机制（如推送）
+4. **更新慢**：平台审核流程长、用户必须手动更新，需良好发布管理
+
+#### 移动应用的类型与分类方式
+
+1. **按内容分类**：游戏、社交、购物、导航、资讯、金融等
+2. **按技术实现分类**：
+   - Native App：原生代码，运行效率高
+   - Web App：运行在浏览器中，不占空间
+   - Hybrid App：网页 + 原生封装，成本适中
+3. **按盈利模式分类**：
+   - 免费 + 内购
+   - 付费无内购
+   - 付费 + 内购
+
+#### 移动应用开发趋势
+
+1. **共享经济驱动App生态**：
+   - Airbnb：每人是房东
+   - Uber/UberEats：移动出行与外卖生态平台
+2. **技术融合趋势**：
+   - 区块链 + IoT：增强数据隐私与连接性
+   - AI：Chatbot、推荐系统
+   - AR/VR：沉浸式体验（如Pokemon Go）
+   - 5G：大带宽低延迟，实时多媒体更普及
+   - Instant App：Android平台下即点即用
+   - IoT集成：多设备、智能家居融合
+3. **医疗健康（mHealth）创新**：
+   - 支持远程问诊、慢病管理、急诊查询
+   - 老年用户是主要增长对象，但接受度低
+   - 应对策略：简洁设计 + 趣味交互 + 语音引导
+
+### 第二章
+
+#### 移动应用开发生命周期（Mobile Apps Development Lifecycle）
+
+移动App开发一般划分为五大阶段：
+
+1. Inception（构思）
+2. Design（设计）
+3. Development（开发）
+4. Stabilization（稳定）
+5. Deployment（部署）
+
+#### Inception 阶段：构思与需求识别
+
+为了定义和明确一个App的核心定位和功能范围，需思考以下问题：
+
+- 是否存在类似的应用？我们的App有何独特之处？
+- 是否需要集成已有的企业系统或API？
+- 目标用户是谁？他们在移动场景下有怎样的需求？
+- 如何利用设备特性（如相机、定位、传感器）来增加价值？
+
+辅助分析方法：
+
+- 定义 Actor：即用户或角色（如游客、注册用户、管理员）
+- 定义 Use Case：即用户意图或操作（如浏览商品、下单、评价）
+
+同时，需设定清晰目标：
+
+- 设计目的是什么？是营销推广、数据采集、服务交互？
+- 用户在什么场景下使用它？他们期望完成什么操作？
+- 不应试图“一网打尽”，需明确功能边界，聚焦关键价值点。
+
+#### Design 阶段：用户体验与界面设计
+
+设计阶段包含两个层面：用户体验设计（UX）与用户界面设计（UI）
+
+用户体验设计：
+
+- UX 通常通过 wireframe 或 mockup 完成，用于构思功能流程与交互逻辑。
+- 不涉及颜色和图像，仅关注功能节点的组织与布局。
+- 需考虑目标平台（iOS/Android）的设计指南和用户习惯：
+
+iOS 设计规范：
+https://developer.apple.com/design/human-interface-guidelines/
+
+Android Material Design：
+https://developer.android.com/design
+
+平台差异示例：
+
+- iOS 无物理返回键，需使用 Navigation Controller 组件引导导航。
+- 平板设备可将多页内容合并在一屏，需调整信息密度与布局。
+
+用户界面设计：
+
+- UI 是在UX之上添加颜色、图像、动画、字体等视觉要素。
+- 专业的UI能提升App的美感、可读性与品牌识别度。
+- 相同App在不同平台UI可能略有不同，但其UX结构应保持一致。
+
+#### Development 阶段：开发与功能构建
+
+- 开发阶段可与设计并行，建议尽早构建原型而非仅停留于概念动画。
+- 推荐快速实现一个“可运行原型”，验证功能是否可行并估算工作量。
+- 原型不等于最终产品，但可提前发现技术瓶颈和用户流程障碍。
+- 原型常用于内部评审、早期测试与向投资人演示。
+
+#### Stabilization 阶段：测试与优化
+
+该阶段目标为提升App稳定性、可用性与性能，常与开发阶段重叠进行。
+
+典型应用状态：
+
+- Prototype：功能不全，仅用于验证思路，Bug很多；
+- Alpha：功能大致完成，尚未广泛测试，存在已知严重问题；
+- Beta：绝大部分功能完备，进入轻量测试与优化阶段；
+- Release Candidate：全部功能完成，准备发布，问题微小。
+
+建议：
+
+- 测试应从Alpha阶段开始介入；
+- 不同阶段应明确对应目标与测试策略；
+- 可使用TestFlight（iOS）或内测通道（Android）邀请外部用户参与测试。
+
+#### Deployment 阶段：发布与分发
+
+iOS应用发布方式：
+
+- Ad-Hoc：用于开发测试，可部署到有限设备
+- In-House：企业分发，不需上架App Store
+- App Store：最终用户分发平台
+
+iOS常见证书类型：
+
+| 证书类型                 | 用途描述                            |
+| ------------------------ | ----------------------------------- |
+| iOS Development          | 调试测试所需证书                    |
+| iOS Distribution         | 用于App Store发布或企业In-House部署 |
+| Developer ID Application | 用于Mac App非App Store发布          |
+
+Android签名与发布：
+
+- 所有Android App必须签名，通常开发者自签证书。
+- 签名文件用于保证App来源、身份验证与版本更新兼容。
+- Android生态支持多渠道分发：Google Play、应用宝、APK站等。
+- 相关构建与签名细节将在后续章节详细说明。
+
+#### App上线后的分析与优化（Performance Tracking）
+
+上线并不是终点，而是优化迭代的开始。需要进行如下指标追踪：
+
+- 总下载量与活跃用户数（DAU/MAU）
+- 平均使用时长、会话深度
+- 用户留存率与转化率
+- App内收入（如广告、内购）
+
+开发者常采用MVP策略：
+
+- 先发布最小可行版本，尽快收集市场反馈；
+- 根据用户意见与数据分析持续优化；
+- 敏捷迭代，逐步扩大功能与完善体验；
+
+### 第三章
+
+#### IDE基本概念
+
+- IDE = Integrated Development Environment（集成开发环境）
+- 用于在PC上开发移动应用，通常包含：
+  - 源代码编辑器
+  - 编译器/解释器
+  - 调试器
+- 写好程序后，可上传到手机运行
+- 某些设备需安装专用SDK（如Nokia S60）
+
+#### 常见开发工具分类
+
+- **Android常见工具**：
+  - Android Studio、Eclipse、AIDE、App Inventor、DroidScript、CppDroid
+- **iOS常见工具**：
+  - Xcode、AppCode、CodeRunner、Atom、Sublime Text
+- **跨平台工具**：
+  - React Native、Flutter、Cordova、Unity、Unreal、Cocos、PhoneGap、Corona 等
+
+#### Android开发IDE
+
+- **Android Studio**：
+  - 官方IDE，支持Java与Kotlin（简化语法）
+- **Eclipse**：
+  - 老牌Java开发工具，曾为主流Android开发环境
+- **MIT App Inventor**：
+  - 图形化Web工具，适合入门开发者
+
+#### iOS开发IDE
+
+- **Xcode**：
+  - 官方IDE，语言为Objective-C / Swift
+  - 仅能运行在 macOS 上
+
+#### 云端Mac开发环境推荐
+
+- 若无Mac可选用以下云服务：
+  - MacInCloud（$25/月）、XCodeClub、VirtualMacOSX
+- 使用浏览器访问，形式为远程桌面
+
+#### Windows Phone开发工具
+
+- **Microsoft XNA**（示例）
+  - 使用C#开发
+  - 包含加速度计模拟器等特殊功能
+
+#### React Native（跨平台）
+
+- 链接：[React Native](https://facebook.github.io/react-native/)
+- 使用JavaScript + React 编写原生App
+- 和Android/iOS使用相同的原生UI控件
+- 热门企业广泛采用
+
+#### Flutter（跨平台）
+
+- 链接：[Flutter官网](https://flutter.dev/)
+- Google推出，2017年发布
+- 语言：Dart
+- 引擎采用C++开发，支持Skia渲染，跨平台效率高
+
+#### Apache Cordova（跨平台）
+
+- 链接：[cordova.apache.org](https://cordova.apache.org/)
+- 使用HTML5 + CSS + JS开发App
+- 使用平台封装访问传感器、网络等能力
+- 适合Web开发者转向App开发
+
+#### 游戏引擎基础（Game Engine）
+
+组成部分包括：
+
+- 主程序逻辑
+- 渲染引擎（2D/3D图像渲染）
+- 音频引擎（背景音效）
+- 物理引擎（实现真实运动碰撞）
+- 人工智能模块（非主程序中）
+
+#### 游戏引擎中的帧概念（Frame）
+
+- 每帧绘制一个完整画面，更新角色/元素
+- 所有更新先写入缓冲区，再复制到屏幕
+- 保证动画流畅，类似电影的帧机制
+
+#### Cocos引擎
+
+- 链接：[Cocos](https://www.cocos.com/en)
+- 开源2D/3D图形引擎 + 内容创作平台
+- 支持JavaScript与TypeScript
+- 分支版本：
+  - Cocos2d-x、Cocos Creator 2.x、3.x（2021+）
+
+#### Unity引擎
+
+- 链接：[Unity](http://unity3d.com/)
+- 跨平台游戏开发引擎
+- 语言：C#
+- 支持Web、PC、移动等多平台
+
+#### Unreal引擎
+
+- 链接：[Unreal Engine](https://www.unrealengine.com/)
+- Epic Games开发，图形性能极强
+- 语言：C++
+
+#### 小程序（Mini Program）
+
+- 微信、支付宝、百度等平台推出轻应用
+- 特点：
+  - 无需安装，支持扫码/搜索/分享打开
+  - 占用空间小、启动快、体验接近原生App
+- 架构：
+  - 底层为原生容器
+  - 上层为WXML（结构）、WXS（脚本） + JavaScript
+  - 类似Web前后端架构
+
+#### 小程序开发工具
+
+- 示例：微信开发者工具
+- 链接：[WeChat DevTools](https://developers.weixin.qq.com/miniprogram/en/dev/devtools/devtools.html)
 
 ### 第五章 安卓概论
 
