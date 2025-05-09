@@ -6,6 +6,8 @@ categories: [介绍]
 tags: [考试]
 ---
 
+[TOC]
+
 # 考试重点
 
 ## 往年考卷的考点
@@ -220,8 +222,6 @@ tags: [考试]
 
    > 会造成**UI线程阻塞**，尤其网络慢时，导致崩溃。
 
-   ------
-
    ❌ 错误线程示例（虽然用了线程，但更新了UI）：
 
    ```java
@@ -235,8 +235,6 @@ tags: [考试]
 
    > 会导致**崩溃或UI异常**。
 
-   ------
-
    ✅ 正确修复方法一：`View.post(Runnable)`
 
    ```java
@@ -248,8 +246,6 @@ tags: [考试]
    ```
 
    - `post()` 将 Runnable 加入 UI 主线程的队列中等待执行。
-
-   ------
 
    ✅ 正确修复方法二：`Executor + Handler`
 
@@ -334,8 +330,6 @@ tags: [考试]
    }
    ```
 
-   ------
-
 9. 总结：Android 与 iOS 并发对比
 
    | 特性         | Android                     | iOS (GCD)                   |
@@ -344,3 +338,206 @@ tags: [考试]
    | 后台任务     | Thread / Executor + Handler | Global DispatchQueue        |
    | 定时任务     | Handler + postDelayed       | Timer / DispatchSourceTimer |
    | 难点         | 多线程 UI 非线程安全        | FIFO队列控制任务顺序        |
+
+### 第九章 iOS Apps Development Environment概论
+
+#### 一、iOS 开发生态与基本模式
+
+##### iOS生态概览
+
+- iOS SDK 自 2009 推出
+- App 发布渠道：**Apple App Store**
+- 收益模式：
+  - 标准抽成：**开发者 70% / Apple 30%**
+  - 小型企业计划（年收入 <$1M）：**Apple 仅收 15%**
+- 支持 In-App Purchase (IAP)、家庭共享（不支持 IAP）
+- 成为开发者：注册 Apple Developer（年费 $99/$299）
+
+------
+
+#### 二、iOS 技术栈与系统架构
+
+#####  四层技术架构（Slides 6–9）
+
+| 层级   | 框架功能                                             |
+| ------ | ---------------------------------------------------- |
+| UI层   | 视图、控件、事件响应（UIKit）                        |
+| 媒体层 | 音视频播放、图形渲染、动画（AVKit, CoreAnimation）   |
+| 服务层 | 文件、网络、定位、iCloud（Foundation, CoreLocation） |
+| 核心层 | 硬件访问、内存、底层网络（IOKit, CoreBluetooth）     |
+
+![ios_layer](res\ios_layer.png)
+
+------
+
+####  三、语言与开发环境介绍
+
+#####  Objective-C（Slide 11–12）
+
+- 面向对象扩展语言，源于 SmallTalk，Apple 自 NeXT Step 沿用
+- 方法调用语法：`[object method]`
+- 示例代码：
+
+```objc
+@property float centerX;
+- (void) move: (float)dx: (float)dy;
+[fireball move: 10: 10];
+```
+
+#####  Swift（Slide 13）
+
+- Apple 自研现代语言，摒弃 C 的繁复语法
+- 语法借鉴 Haskell、Python、C#，强调：**安全 + 简洁 + 强类型**
+
+#####  面向对象复习（Slides 14–16）
+
+- `Class`：类定义
+- `Instance`：类的实例
+- `Method`：对象的接口
+- `Property` = Getter + Setter组合
+
+#####  Xcode（Slides 17–21）
+
+- macOS 专用 IDE
+- 包含编译器、模拟器、UI 编辑器（Storyboard/SwiftUI）
+- 云方案：MacInCloud, XCodeClub
+- 模拟器可调缩放
+
+------
+
+####  四、iOS 应用架构与主要组件（Storyboard 项目）
+
+#####  核心组成结构（Slides 23–28）
+
+| 组件              | 功能                                    |
+| ----------------- | --------------------------------------- |
+| `main.m`          | 程序主入口，仅在 Objective-C 项目中存在 |
+| `AppDelegate`     | 管理生命周期（启动、终止）              |
+| `SceneDelegate`   | 多窗口支持（iOS 13+）                   |
+| `Main.storyboard` | 拖拽式 UI 视图容器                      |
+| `ViewController`  | 控制逻辑，如按钮响应等                  |
+
+🧠 小贴士：iOS 13 起将部分 `AppDelegate` 职责移交给 `SceneDelegate`
+
+------
+
+####  五、Hello World 示例（Storyboard 项目）
+
+#####  Objective-C 项目流程（Slides 30–47）
+
+1. 创建新项目 → 选择语言为 Objective-C
+2. 在 `Main.storyboard` 拖入 Label & Button
+3. **Ctrl + 拖动**绑定组件：
+
+```objc
+@property (weak, nonatomic) IBOutlet UILabel *label1;
+- (IBAction)button1:(id)sender;
+```
+
+1. 实现方法逻辑：
+
+```objc
+- (IBAction)button1:(id)sender {
+    label1.text = @"Hello iOS!!!";
+}
+```
+
+🧠 内存管理：
+
+- `strong`：强引用，决定对象生命周期
+- `weak`：弱引用，不影响生命周期，防止循环引用
+
+------
+
+#####  Swift 项目流程（Slides 48–57）
+
+1. 创建项目，选择语言为 Swift
+2. 拖入 UI 控件（Label & Button）
+3. 使用 Ctrl + 拖动进行绑定：
+
+```swift
+@IBOutlet weak var label1: UILabel!
+@IBAction func button1(sender: AnyObject) {
+    label1.text = "Hello iOS!!!"
+}
+```
+
+#####  Objective-C vs Swift 差异对比（Slide 58）
+
+| 特性     | Objective-C               | Swift                |
+| -------- | ------------------------- | -------------------- |
+| 语法风格 | `[]` 语法                 | 点语法               |
+| 引用管理 | `@property (weak/strong)` | `@IBOutlet weak var` |
+| 文件结构 | `.h` + `.m`               | 单 `.swift` 文件     |
+| 接口声明 | `IBAction/IBOutlet`       | 同上但更简洁         |
+
+------
+
+####  六、页面导航控制：Navigation Controller（Slides 60–70）
+
+#####  实现步骤：
+
+1. 选中初始 View → `Editor → Embed In → Navigation Controller`
+2. 拖入多个 `ViewController` 作为“页面”
+3. 使用“Bar Button Item”并 `Ctrl + 拖动` 添加转场（segue）→ 类型选择“Show”
+4. 自动生成返回按钮
+5. 创建各自的控制器类（继承自 `UIViewController`），绑定视图
+
+------
+
+####  七、SwiftUI 入门（Slides 72–81）
+
+#####  SwiftUI 特点
+
+- 2019年发布的新UI框架，**声明式编程**方式构建视图
+- 支持 iOS 13+ 和 Xcode 11+
+- UI 由代码描述，而非拖拽
+- 跨平台（iOS、macOS、watchOS）统一
+
+#####  示例代码：
+
+```swift
+struct ContentView: View {
+    @State var message = "Hello World!"
+    var body: some View {
+        VStack {
+            Text(message)
+            Button("Click Me!") {
+                message = "Hello iOS!!!"
+            }
+        }
+        .padding()
+    }
+}
+```
+
+#####  优缺点分析：
+
+| 优势               | 限制                       |
+| ------------------ | -------------------------- |
+| 结构简洁，实时预览 | 仅支持 iOS 13+             |
+| 跨平台重用组件     | 与 Storyboard 迁移不兼容   |
+| 支持模块化 UI      | 社区资源较少，学习曲线较陡 |
+
+------
+
+####  八、UI开发演化趋势（Slide 82）
+
+| 工具                 | UI构建方式              |
+| -------------------- | ----------------------- |
+| Eclipse (旧 Android) | 手写 XML                |
+| Android Studio       | ConstraintLayout + 拖拽 |
+| Xcode + Storyboard   | 拖拽式可视化            |
+| Xcode + SwiftUI      | 声明式代码 + 实时预览   |
+
+------
+
+####  九、复习建议与重点
+
+| 类别     | 建议掌握内容                                      |
+| -------- | ------------------------------------------------- |
+| Swift    | 属性声明、函数书写、控件绑定                      |
+| App架构  | AppDelegate、SceneDelegate职责与启动流程          |
+| 开发工具 | Xcode 使用、模拟器操作                            |
+| 导航跳转 | Navigation Controller 使用与多页面绑定            |
+| SwiftUI  | 声明式 UI 编程方法，@State 使用，跨平台优势与限制 |
