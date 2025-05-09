@@ -4,6 +4,9 @@ title: "App Key Points"
 date: 2025-05-09
 categories: [介绍]
 tags: [考试]
+toc: true
+toc_label: "目录"
+toc_sticky: true
 ---
 
 [TOC]
@@ -366,7 +369,7 @@ tags: [考试]
 | 服务层 | 文件、网络、定位、iCloud（Foundation, CoreLocation） |
 | 核心层 | 硬件访问、内存、底层网络（IOKit, CoreBluetooth）     |
 
-![ios_layer](res\ios_layer.png)
+![ios_layer](../assets/images/ios_layer.png)
 
 ------
 
