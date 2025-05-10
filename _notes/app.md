@@ -14,6 +14,237 @@ tags: [考试]
 
 ## 往年考卷的考点
 
+### 22-23 
+
+下面是《COMP7506 Smart Phone Apps Development》2022–2023学年期末考试的标准答案草稿（共100分，按题号顺序）。包含选择题详解及编程题参考答案。
+
+------
+
+#### Question 1 Multiple Choice [20%]
+
+每题2分，共10题。
+
+1. **D**（All of the above）
+    理由：i)更易使用、ii)比App加载快、iii)节省手机空间、iv)避免付费，都是用户偏好Web的原因。
+
+2. **B**（0.296 sec）
+    计算：37MB = 296Mb，下载时间 = 296Mb / 1000Mbps = **0.296s**
+
+   这个换算是为了把**兆字节（MB）\**转换成\**兆比特（Mb）**，因为网络速度一般是以“比特（bit）”为单位表示的，比如题目里说的 **1 Gbps（1 Giga bit per second）**。
+
+   单位换算关系如下：
+
+   - **1 Byte（字节） = 8 bits（比特）**
+   - 所以：**1 MB（Mega Byte）= 8 Mb（Mega bit）**
+
+   回到题目：
+
+   应用大小是 **37MB**
+    所以：
+
+   $37 \text{ MB} \times 8 = 296 \text{ Mb}$
+
+   也就是：**37兆字节 = 296兆比特（Mb）**
+
+3. **D**（All of the above）
+    解释：
+
+   - i) Android应替换；
+
+   - ii) KitKat仍默认用Dalvik，但支持ART；
+
+   - iii) ART可执行.apk；
+
+   - iv) ART使用AOT编译。
+
+4. **D**（All of the above）
+    解释：AndroidManifest包含组件、权限、SDK版本、屏幕支持。
+
+5. **C**（ii) and iv) only）
+    解释：Monkey支持真机和模拟器、测试图形/文本输入，但非iOS工具。
+
+6. A我觉得
+    解释：
+
+   - i) 小企业方案85:15；
+
+   - ii) 家庭共享支持6人；
+
+   - iii) Xcode仅在Mac上运行；
+
+   - iv) SwiftUI从iOS 13开始支持。
+
+7. **A**（var x: Int?）
+    解释：Int? 为可选类型。
+
+8. **B**（as!）
+    解释：强制类型转换可能失败，用 as!。
+
+9. **C**（View Controller）
+    解释：Storyboard中每一页面为View Controller。
+
+10. **B**（ContentView）
+     解释：SwiftUI项目中UI和逻辑默认写在ContentView.swift。
+
+------
+
+#### Question 2 Android: Decimal to Binary App [20%]
+
+(a) **match_parent 与 wrap_content 含义**（2%）
+
+- `match_parent`：拉伸至父容器宽/高。
+- `wrap_content`：包裹内容所需最小宽/高。
+
+(b) **布局图**（5%）
+
+```sql
+Decimal:
+[      EditText        ]
+Binary:
+[      TextView        ]
+[ Convert Button ]
+```
+
+(c) **填空题**（6%）
+ A: `AppCompatActivity`
+ B: `R.layout.activity_main`
+ C: `R.id.decimalNumber`
+ D: `R.id.binaryNumber`
+ E: `R.id.convert`
+ F: `new converter()`
+
+(d) **onClick 方法实现**（7%）
+
+```java
+public void onClick(View view) {
+    String decStr = decimalNumber.getText().toString();
+    try {
+        int dec = Integer.parseInt(decStr);
+        String bin = Integer.toBinaryString(dec);
+        binaryNumber.setText(bin);
+    } catch (NumberFormatException e) {
+        binaryNumber.setText("Invalid input");
+    }
+}
+```
+
+------
+
+#### Question 3 Android UI, Threads, JSON, Permissions [20%]
+
+(a) **两个UI规则与解释**（6%）
+
+- 规则1：**Do not block the UI thread**
+   → 保持响应性，避免ANR。
+- 规则2：**Only update UI on UI thread**
+   → Android UI只能主线程修改，避免崩溃。
+
+(b) **图像是否成功加载与原因**（4%）
+
+- 无法成功显示：主线程中网络操作会抛异常（NetworkOnMainThreadException）
+- 修正需使用子线程或AsyncTask等。
+
+(c) **线程 vs Handler 区别**（2%）
+
+- Thread：并行执行任务。
+- Handler：用于主线程任务队列通信、延迟/定时执行。
+
+(d) **JSON提取结果**（6%）
+ Temp1 = "2023"
+ Temp2 = "Priscilla"
+ Temp3 = "Ellen"
+ Temp4 = "Sonia"
+ Array1 = ["Chow Chow", "Ming Ming", "Ben Sir"]
+
+(e) **网络权限**（2%）
+ `<uses-permission android:name="android.permission.INTERNET"/>`
+
+------
+
+#### Question 4 iOS Sudoku Game [20%]
+
+(a) **填空题**（5%）
+ A: `UIViewController`
+ B: `UITextField!`（共9个）
+ C: `UILabel!`
+ D: `@IBAction`
+ E: `viewDidLoad()`
+
+(b) **check() 方法实现**（10%）
+
+```swift
+func check() {
+    let cells = [
+        [cell00, cell01, cell02],
+        [cell10, cell11, cell12],
+        [cell20, cell21, cell22]
+    ]
+    var grid = [[Int]]()
+    for row in cells {
+        var intRow = [Int]()
+        for cell in row {
+            if let text = cell?.text, let value = Int(text) {
+                intRow.append(value)
+            } else {
+                result.text = "Wrong!"
+                return
+            }
+        }
+        grid.append(intRow)
+    }
+
+    let targetSum = grid[0].reduce(0, +)
+    for i in 0..<3 {
+        if grid[i].reduce(0, +) != targetSum { result.text = "Wrong!"; return }
+        if (grid[0][i] + grid[1][i] + grid[2][i]) != targetSum { result.text = "Wrong!"; return }
+    }
+
+    result.text = "Correct! Sum = \(targetSum)"
+}
+```
+
+(c) **Storyboard连接方式**（2%）
+ 按住 Ctrl 拖动控件到 ViewController.swift 中，创建 IBOutlet 或 IBAction。
+
+(d) **weak 含义**（1%）
+ 防止强引用循环（retain cycle），使内存可被释放。
+
+(e) **SwiftUI优劣势**（2%）
+
+- 优点：代码简洁，响应式，实时预览。
+- 缺点：对旧系统版本支持差，复杂UI不如Storyboard灵活。
+
+------
+
+#### Question 5 Swift Functions and App Signing [20%]
+
+(a) **参数标签与内部参数名定义**（2%）
+
+- Argument label：函数外部调用时的参数名
+- Parameter name：函数内部使用的变量名
+
+(b) **写出函数调用语句**（6%）
+ (i) `Sum(num1: 75, num2: 6)`
+ (ii) `Sum(num1: 75, and: 6)`
+ (iii) `Sum(75, 6)`
+
+(c) **设置默认参数值**（2%）
+ `func Sum(num1: Int32, num2: Int32 = 0) -> Int32`
+
+(d) **为何应从Mac App Store下载Xcode（4%）**
+
+- 1）官方保障：版本完整、无恶意代码；
+- 2）自动更新：兼容系统更新，避免开发中断。
+
+(e) **签名过程差异（3%）**
+
+- Android Studio：使用 keystore 自行签名；
+- Xcode：需使用Apple Developer证书，较严格、安全性高。
+
+(f) **为何Google Play应用更多（3%）**
+
+- 审核宽松、开放性高、开发门槛低，吸引更多开发者发布。
+
 ### 📱 Android 开发
 
 #### 1. 核心组件与架构
