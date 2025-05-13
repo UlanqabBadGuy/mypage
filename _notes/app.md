@@ -245,6 +245,197 @@ func check() {
 
 - 审核宽松、开放性高、开发门槛低，吸引更多开发者发布。
 
+### 21-22
+
+#### Question 1 [20%]
+
+(a) Explain the meaning of `match_parent` and `wrap_content`. (2%)
+
+- **match_parent**: The view will expand to match the size of its parent container.
+- **wrap_content**: The view will resize just enough to enclose its content.
+
+(b) Draw the layout (4%)
+
+```
+Number 1
+Number 2
+Number 3
+Number 4
+Number 5
+Number 6
+[GENERATE]
+```
+
+(Vertical list of 6 TextViews followed by a Button)
+
+(c) Fill in the blanks (4%)
+
+```java
+(A) R.layout.activity_main
+(B) R.id.number1
+(C) R.id.number2
+(D) R.id.number3
+(E) R.id.number4
+(F) R.id.number5
+(G) R.id.number6
+(H) R.id.btn_generate
+```
+
+(d) Function of `chooseNumbers()` (4%)
+
+It randomly selects 6 **distinct integers** from 1 to 49 and marks them as `true` in the `chosen` boolean array.
+
+(e) Complete `onClick()` method (6%)
+
+```java
+public void onClick(View dummy) {
+    boolean[] chosen = new boolean[49];
+    chooseNumbers(chosen);
+    int index = 0;
+    for (int i = 0; i < 49; i++) {
+        if (chosen[i]) {
+            tv_number[index].setText("Number " + (index + 1) + ": " + (i + 1));
+            index++;
+        }
+    }
+}
+```
+
+------
+
+#### **Question 2 [20%]**
+
+(a) Two UI rules and rationale (6%)
+
+1. **No blocking operations on UI thread**: To keep the app responsive.
+2. **UI updates must occur on UI thread**: Only the main thread can modify UI elements to prevent race conditions or crashes.
+
+(b) Will the image display properly? Why? (4%)
+
+- **No**, the image will not display properly.
+- **Reason**: Network operations (e.g., `new URL().getContent()`) are not allowed on the main UI thread. It will cause a `NetworkOnMainThreadException`.
+
+(c) Using `View.post(Runnable)` (6%)
+
+```java
+new Thread(new Runnable() {
+    @Override
+    public void run() {
+        try {
+            String url = "https://i.cs.hku.hk/~comp7506/welcome.jpg";
+            final Bitmap bitmap = BitmapFactory.decodeStream(
+                    (InputStream)new URL(url).getContent());
+
+            myImageView.post(new Runnable() {
+                @Override
+                public void run() {
+                    myImageView.setImageBitmap(bitmap);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}).start();
+```
+
+- **Effect**: The image loads correctly since network operations are done in a background thread and UI updates are posted to the main thread.
+
+(d) Difference between thread and handler (2%)
+
+- **Thread** runs code in the background.
+- **Handler** allows you to send and process messages and runnables on a particular thread (e.g., the main UI thread).
+
+------
+
+#### **Question 3 [20%]**
+
+(a) Implement `btn_add()` and `btn_reset()` (6%)
+
+```swift
+@IBAction func btn_add(_ sender: Any) {
+    counter += 1
+    lbl_counter.text = "\(counter)"
+}
+
+@IBAction func btn_reset(_ sender: Any) {
+    counter = 0
+    lbl_counter.text = "\(counter)"
+}
+```
+
+(b) Crash after 128 clicks (6%)
+
+- **Cause**: `Int8` has a range of -128 to 127. Overflow occurs.
+- **Fix**: Change `Int8` to `Int` (or `UInt16`, etc.).
+
+```swift
+var counter: Int = 0
+```
+
+(c) Meaning of `weak` (2%)
+
+- It prevents **strong reference cycles (retain cycles)**.
+- It means the reference does not increase the retain count of the object.
+
+(d) Change font size (2%)
+
+```swift
+lbl_counter.font = UIFont.systemFont(ofSize: 24)
+```
+
+(e) Function call statements (4%)
+
+(i)
+
+```swift
+compute(num1: 7506, n2: 2022)
+```
+
+(ii)
+
+```swift
+compute(7506, 2022)
+```
+
+------
+
+#### **Question 4 [20%]**
+
+(a) Google Play cheaper than Apple Store (4%)
+
+- Google charges a one-time USD $25 fee.
+- Apple charges an **annual** USD $99 developer fee.
+- This makes it cheaper to publish on Google Play, encouraging more apps.
+
+(b) Key difference in signing process (4%)
+
+- **Android Studio** uses keystore `.jks` file and signing config.
+- **Xcode** uses developer certificates and provisioning profiles managed via Apple Developer Portal and Xcode interface.
+
+(c) Difference between `versionCode` and `versionName` (2%)
+
+- `versionCode`: **Integer**, used for internal app versioning, must increment.
+- `versionName`: **String**, shown to users, e.g., "1.2.3".
+
+(d) Two HarmonyOS kits (4%)
+
+1. **Account Kit**: For user authentication and authorization across devices.
+2. **Location Kit**: Provides location-based services using GPS, WiFi, etc.
+
+(e) Hardware vs. Software sensor + examples (4%)
+
+- **Hardware sensor**: Actual physical sensor (e.g., accelerometer).
+- **Software sensor**: Derived/computed from multiple sources (e.g., linear acceleration).
+- **Examples**:
+  - Hardware: Gyroscope
+  - Software: Step detector
+
+(f) Usage of proximity sensor (2%)
+
+- **Usage**: Detects how close the phone is to an object (e.g., ear).
+- **Application**: Turning off the screen during a call.
+
 ### 📱 Android 开发
 
 #### 1. 核心组件与架构
