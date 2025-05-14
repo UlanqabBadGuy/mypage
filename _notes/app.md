@@ -436,6 +436,128 @@ compute(7506, 2022)
 - **Usage**: Detects how close the phone is to an object (e.g., ear).
 - **Application**: Turning off the screen during a call.
 
+### 21
+
+### 标准答案
+
+**Question 1 答案**
+
+| MC Question | 答案 |
+| :---------- | :--- |
+| 1           | B    |
+| 2           | B    |
+| 3           | A    |
+| 4           | C    |
+| 5           | D    |
+| 6           | C    |
+| 7           | D    |
+| 8           | C    |
+| 9           | A    |
+| 10          | C    |
+
+------
+
+**Question 2 答案**
+(a)
+
+- `match_parent`：视图大小与其父容器一致。
+- `wrap_content`：视图大小仅包裹其内容。
+
+(b) 布局示意图：
+
+1. 顶部显示“Please enter an expression:”（`TextView`）。
+2. 下方为输入框（`EditText`）。
+3. 中间按钮“EVALUATE”。
+4. 底部显示“Result: ”（`TextView`）。
+
+(c) 代码填空：
+(i) `AppCompatActivity`
+(ii) `savedInstanceState`
+(iii) `activity_main`
+(iv) `findViewById(R.id.editText)`
+(v) `findViewById(R.id.textView2)`
+(vi) `findViewById(R.id.button)`
+(vii) `View.OnClickListener`
+(viii) `onClick`
+(ix) `Expression.getText().toString()`
+(x) `Result.setText`
+
+------
+
+**Question 3 答案**
+(a) `run()` 方法实现：
+
+```java
+public void run() {
+    time--;
+    timeDisplay.setText("Time Left: " + time);
+    if (time > 0) {
+        handler.postDelayed(updateTimer, 1000);
+    }
+}
+```
+
+(b) 可以正常运行。`removeCallbacks` 用于取消之前的回调，但首次运行时无需移除。
+
+(c) Android UI 编程规则：
+
+1. UI 操作必须在主线程执行。
+2. 避免阻塞主线程（耗时操作需放在后台）。
+
+(d) 崩溃原因：网络操作在非 UI 线程执行，且 `IV.setImageBitmap` 未在 UI 线程调用。
+
+(e) 使用 `View.post(Runnable)` 切换到主线程：
+
+```java
+IV.post(() -> IV.setImageBitmap(bitmap));
+```
+
+(f) Executor 通过线程池管理后台任务，避免直接创建线程。
+
+------
+
+**Question 4 答案**
+(a) 填空：
+(i) `ViewController`
+(ii) `UIViewController`
+(iii) `UITextField`
+(iv) `UILabel`
+(v) `IBAction`
+(vi) `expenses.text ?? ""`
+(vii) `(Double(e)! - 200) / 3`
+(viii) `String(format: "%.1f", s)`
+(ix) `"0"`
+(x) `viewDidLoad`
+
+(b) `!` 表示强制解包，假设输入非空，否则崩溃。
+
+(c) `Int?` 表示可选类型，可能为 `nil`。适用场景：
+
+1. 变量可能无值（如用户未输入）。
+2. 需要延迟初始化。
+
+(d) `super` 指父类，用于调用父类方法（如 `super.viewDidLoad()`）。
+
+(e) 通过 Interface Builder 拖拽 `IBOutlet` 和 `IBAction` 连接。
+
+------
+
+**Question 5 答案**
+(a) **类别**：公共服务类应用。用于疫情追踪和通知。
+
+(b) **是否众包**：是。用户贡献位置数据，协助疫情追踪。
+
+(c) **5 阶段**：规划、设计、开发、测试、发布。
+
+(d) **快速开发原因**：使用跨平台框架（如 React Native）或并行开发团队。
+
+(e) **隐私风险**：若数据泄露，可能暴露用户行踪。
+
+(f) **改进建议**：
+
+- **问题**：依赖用户主动扫描二维码，漏检风险高。
+- **改进**：引入蓝牙自动记录接触设备（如 Exposure Notifications API）。
+
 ### 📱 Android 开发
 
 #### 1. 核心组件与架构
