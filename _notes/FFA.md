@@ -1,3 +1,10 @@
+---
+layout: note
+title: "FFA"
+date: 2025-05-09
+categories: [介绍]
+tags: [考试]
+---
 # FFA 中文版
 
 ## 第一章
