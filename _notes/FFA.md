@@ -869,183 +869,313 @@ tags: [考试]
 
 ## 第六章
 
-### 数据集不平衡定义 (Imbalanced Dataset) [第5页]
+本次讲座的议程包括以下几个主要部分：
 
-数据集不平衡（也称为**skewed dataset**）是指在分类问题中，各类别样本分布不均匀的情况。通常包含一个多数类（majority class）和一个少数类（minority class），例如在信用卡欺诈检测中，欺诈样本往往只占总样本的1%或更少 。
+- **不平衡数据处理 (Imbalance Data Handling)**
+- 机器学习算法 (ML Algorithm)
+  - **线性回归 (Linear Regression)**
+  - **逻辑回归 (Logistic Regression)**
+- **分类模型性能评估 (Performance Evaluation for classification models)**
+- **决策树 (Decision Tree)**
+- **集成学习 (Ensemble Learning)**
 
-### 不平衡数据带来的问题 (Problems of Imbalance Dataset) [第6页]
+#### 样本数据集 (Sample Data Set) (PPT, Page 4)
 
-1. 大多数机器学习模型假设各类别分布均匀
-2. 模型更易学习多数类特征，导致对少数类的识别能力差
-3. 轻度不平衡（如4:6）可勉强使用；严重不平衡时需特别处理 。
+- **数据划分 (Split Data):** 将样本数据集划分为 2-3 个子数据集。
 
-### 变动采样窗口 (Varying Sample Window) [第8页]
+- 训练数据 (Train Data):
 
-通过扩大观测时间窗口（observation period），增加少数类样本量。例如，将6个月样本扩展为12个月，或对同一少数类样本重复采样，以获得更多类似但不完全相同的样本 。
+   用于构建模型。包含客户年龄 (Customer Age)、收入 (Income)、性别 (Gender)、欺诈 (Fraud) 标签等特征 (features)。其中“欺诈”通常是一个二元目标变量 (Target)，例如 1 表示欺诈，0 表示非欺诈。
 
-### 过采样 (Over-sampling) [第9页]
+  - **示例模型:** PPT 中给出了一个逻辑回归的公式示例： P(Fraud ∣age, income,...)=1+e−(0.10+0.50⋅age+0.0034⋅income+...)1
 
-在不丢失任何样本信息的前提下，通过复制少数类样本来增加其数量，从而平衡类别分布。优点是保留了原始多数类和少数类信息 。
+- **测试数据 (Test Data):** 用于应用（Apply）训练好的模型，并得到欺诈分数 (Fraud Score)。例如，对新客户 Emma、Will、Dan 进行欺诈风险评估。
 
-### 欠采样 (Under-sampling) [第10页]
+#### 机器学习算法 (Machine Learning Algorithms) (PPT, Page 5)
 
-通过随机删除多数类样本来减少其数量，以达到与少数类相近的比例，适用于多数类样本过多时，但会丢失部分信息 。
+本节将介绍一些常用的机器学习算法。
 
-### ROSE (Random Over Sampling Examples) [第12页]
+#### 线性回归 (Linear Regression) (PPT, Page 6-7)
 
-结合过采样和欠采样的方法，通过对少数类数据进行合成生成（augmented sampling），在保持类别分布的同时强化模型学习，对估计分类规则更准确有帮助 。
+- **定义 (PPT, Page 6):** 一种**监督学习 (supervised learning)** 算法，用于预测**连续变量 (continuous variable)** 的值。
 
-### SMOTE (Synthetic Minority Over-Sampling Technique) [第13–14页]
+- **基本思想 (PPT, Page 6):** 找到一条最佳拟合直线（或更高维的超平面），以描述一个**因变量 (dependent variable)** 和一个或多个**自变量 (independent variables)** 之间的线性关系。
 
-1. 对每个少数类样本计算k个最近邻
-2. 随机选取其中n个邻居
-3. 在样本与邻居之间线性插值生成新样本
-    优点是合并过采样与欠采样，效果优于单纯的欠/过采样；缺点是若少数类样本分布边界含噪声，可能生成跨越类别的“桥接”样本 。
+- 模型公式 (PPT, Page 7):
 
-### ADASYN (Adaptive Synthetic Sampling) [第15页]
+  Y=β0+β1X1+β2X2+⋯+βnXn+ϵ
 
-在SMOTE基础上，根据少数类样本周围邻居的“纯度比”（impurity ratio）自适应地生成合成样本。邻居多为多数类的少数类样本会生成更多新样本，增强模型对难学样本的关注 。
+  - Y: 因变量 (Dependent Variable)
+  - β0: 截距 (Intercept)
+  - β1,β2,…,βn: 回归系数 (Regression Coefficients)，表示每个自变量对因变量的影响。
+  - X1,X2,…,Xn: 自变量 (Independent Variables)
+  - ϵ: 误差项 (Error Term)，表示模型未能解释的部分。
 
-### 线性回归 (Linear Regression) [第17–18页]
+- 目标 (PPT, Page 7):
 
-用于预测连续目标变量Y与多个自变量X₁…Xₙ之间的线性关系，目标是最小化均方误差（MSE），拟合直线公式：
- Y=β0+β1X1+⋯+βnXn+εY = β_0 + β_1 X_1 + \dots + β_n X_n + ε
- 残差（residuals）为预测值与真实值之差 。
+   找到使
 
-### 回归系数解释 (Interpretation of Coefficients) [第19页]
+  残差平方和 (Sum of Squared Residuals, SSR)
 
-- **斜率βᵢ**：在其他变量不变时，Xᵢ每增加1单位，Y的期望变化量
-- **截距β₀**：当所有X=0时Y的期望值（在X从不为0时无实际意义） 。
+   最小化的 
 
-### 回归性能评估指标 (Regression Performance Measures) [第20–22页]
+  β
 
-- **MAE (Mean Absolute Error)**：平均绝对误差
-- **MSE (Mean Squared Error)**：平均平方误差，更敏感异常值
-- **RMSE (Root MSE)**：MSE开方，量纲与原变量一致 。
+   值。
 
-### 决定系数R² (R-Squared) [第24页]
+  SSR=i=1∑N(Yi−Yi^)2
 
-表示回归模型解释的总方差比例，即1 – (残差平方和/总平方和)，值越接近1，模型拟合越好 。
+  - Yi: 实际值 (Actual Value)
+  - Yi^: 预测值 (Predicted Value)
 
-### 调整后R² (Adjusted R-Squared) [第25页]
+#### 逻辑回归 (Logistic Regression) (PPT, Page 8-10)
 
-在R²基础上惩罚无关自变量，增加自变量不一定提升Adjusted R²，用于多元回归模型对比 。
+- **定义 (PPT, Page 8):** 一种**分类 (classification)** 算法，用于预测**分类变量 (categorical variable)** 的概率，通常用于**二分类 (binary classification)** 问题。
 
-### 线性回归优缺点 (Linear Regression Advantages & Disadvantages) [第26页]
+- **应用 (PPT, Page 8):** 例如预测客户是否会欺诈 (Fraud or not Fraud)。
 
-**优点**：可解释性强、简单、高效
- **缺点**：表达能力有限、对异常值敏感、需满足线性、正态性、同方差性假设 。
+- **核心思想 (PPT, Page 9):** 不直接预测类别，而是预测某个事件发生的**概率 (probability)**。然后根据概率和设定的**阈值 (threshold)** 将数据点分类。
 
-### 逻辑回归 (Logistic Regression) [第27–28页]
+- Sigmoid 函数 (Sigmoid Function) (PPT, Page 9):
 
-适用于二分类问题，通过logit函数将概率映射至线性模型：
- logit(p)=ln⁡p1−p=β0+β1X1+⋯+βnXn\text{logit}(p)=\ln\frac{p}{1-p}=β_0 + β_1 X_1 + \dots + β_n X_n
- 输出为[0,1]之间的概率 。
+   逻辑回归使用 Sigmoid 函数将线性回归的输出转换为 0 到 1 之间的概率值。
 
-### 概率、赔率与对数几率 (Probability, Odds & Log-Odds) [第29–30页]
+  P(Y=1∣X)=1+e−(β0+β1X1+⋯+βnXn)1
 
-- **概率p**：事件发生比例
-- **赔率(p/(1-p))**：事件发生与不发生之比
-- **对数几率logit(p)**：赔率取自然对数，用于线性化 。
+  - 这个函数将任意实数映射到 (0, 1) 区间。
 
-### 逻辑回归性能指标 (Logistic Regression Metrics) [第33–35页]
+- 优点 (PPT, Page 10):
 
-- **AIC (Akaike Information Criterion)**：评估拟合优度并惩罚复杂度，值越低越好
-- **BIC (Bayesian Information Criterion)**：惩罚更严格 。
+  - 计算效率高，易于实现。
+  - 输出是概率值，易于解释。
+  - 在许多二分类问题中表现良好。
 
-### 训练/验证/测试集划分 (Data Splitting) [第39–45页]
+- 缺点 (PPT, Page 10):
 
-- 常见比例：70%训练+30%测试，或40%训练+30%验证+30%测试
-- **训练集**：构建模型
-- **验证集**：调参、早停
-- **测试集**：评估最终性能，防止过拟合 。
+  - 假设特征之间是线性关系，不适合处理非线性关系。
+  - 对**异常值 (outliers)** 敏感。
+  - 可能受到**多重共线性 (multicollinearity)** 的影响。
 
-### 混淆矩阵 (Confusion Matrix) [第48页]
+#### 分类模型性能评估 (Performance Evaluation for Classification Models) (PPT, Page 11)
 
-二分类结果的TP、FP、FN、TN分布，用于进一步计算多种分类性能指标 。
+本节将介绍如何评估分类模型的性能。
 
-### 准确率 Accuracy [第49页]
+#### 混淆矩阵 (Confusion Matrix) (PPT, Page 12-13)
 
-( TP + TN ) / 总样本数，易受类别不平衡影响 。
+- **定义 (PPT, Page 12):** 用于可视化分类模型性能的表格，尤其适用于多分类问题，但在这里主要用于二分类的解释。
+- 组成部分 (PPT, Page 13):
+  - **真阳性 (True Positives, TP):** 实际为正类，预测也为正类。
+  - **真阴性 (True Negatives, TN):** 实际为负类，预测也为负类。
+  - **假阳性 (False Positives, FP):** 实际为负类，预测为正类（**I 类错误 (Type I Error)** 或**误报 (False Alarm)**）。
+  - **假阴性 (False Negatives, FN):** 实际为正类，预测为负类（**II 类错误 (Type II Error)** 或**漏报 (Miss)**）。
+- 在欺诈检测中的含义 (PPT, Page 13):
+  - **TP:** 实际欺诈被识别为欺诈。
+  - **TN:** 实际非欺诈被识别为非欺诈。
+  - **FP:** 实际非欺诈被误识别为欺诈。
+  - **FN:** 实际欺诈被漏识别为非欺诈（这是最危险的错误，因为它意味着欺诈行为未被发现）。
 
-### 召回率 Recall (Sensitivity) [第51页]
+#### 评估指标 (Evaluation Metrics) (PPT, Page 14-16)
 
-TP / (TP + FN)，衡量少数类（如欺诈）被正确识别的比例 。
+模型评估指标
 
-### 精确率 Precision [第52页]
+- **准确率（Accuracy）**：正确预测的样本占总样本的比例。
 
-TP / (TP + FP)，衡量预测为少数类中真正少数类的比例 。
+  $$
+  \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+  $$
 
-### F1 分数 F1-Score [第53页]
+  - 问题：当数据严重不均衡时，准确率可能具有误导性（例如，即使模型将所有样本都预测为非欺诈，若欺诈样本很少，准确率仍然会很高）。
 
-Precision和Recall的调和平均，综合考虑FP和FN 。
+- **精确率（Precision）/ 查准率（Positive Predictive Value）**：预测为正样本中，实际为正样本的比例。
 
-### 特异度/假阳率 (TNR & FPR) [第55页]
+  $$
+  \text{Precision} = \frac{TP}{TP + FP}
+  $$
 
-- **TNR (Specificity)** = TN / (FP + TN)
-- **FPR** = 1 – TNR 。
+  - 关注模型预测的精确性，降低误报。
 
-### ROC曲线与AUC (ROC Curve & AUC) [第56–59页]
+- **召回率（Recall）/ 查全率（Sensitivity）**：实际为正样本的样本中，被模型正确识别为正样本的比例。
 
-通过改变预测阈值绘制TPR对FPR曲线，AUC代表曲线下面积，越接近1区分能力越强 。
+  $$
+  \text{Recall} = \frac{TP}{TP + FN}
+  $$
 
-### 决策树基础 (Decision Tree Basics) [第77页]
+  - 关注模型捕获欺诈样本的能力，降低漏报。
 
-由根节点(root)、决策节点(decision nodes)和叶节点(leaf/terminal nodes)组成，用于分类或回归 。
+- **F1 分数（F1-Score）**：精确率和召回率的调和平均数（harmonic mean），综合考虑两个指标的表现。
 
-### 划分与停止决策 (Splitting & Stopping Decisions) [第78页]
+  $$
+  F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+  $$
 
-- **划分决策**：选择哪个属性、何种阈值进行分裂
-- **停止决策**：何时停止分裂（如最大深度、最小样本数）
-- **赋值决策**：叶节点类别或回归值的确定 。
+  - 在数据失衡时，F1 分数是比准确率更好的**评估指标**。
 
-### 纯度度量 (Impurity Measures) [第79页]
+- **接收者操作特征曲线（ROC Curve）与曲线下面积（AUC）**：
 
-分类使用**基尼系数 (Gini impurity)\**或\**信息熵 (entropy)**，回归使用**方差 (variance)**衡量节点纯度 。
+  - ROC 曲线：刻画不同分类阈值下的真正率（True Positive Rate, TPR）与假正率（False Positive Rate, FPR）之间的关系。
 
-### 信息增益示例 (Information Gain Example) [第80–82页]
+    $$
+    \text{FPR} = \frac{FP}{FP + TN}
+    $$
 
-以“AGE”和“INCOME”为划分属性，计算IG(D,AGE)和IG(D,INCOME)，选择IG更大的属性进行分裂 。
+- 
 
-### 回归树 (Regression Tree) [第83页]
+  - AUC (PPT, Page 18):
 
-对连续目标变量，节点分裂以最小化子节点内MSE为目标，实现回归预测 。
+     ROC 曲线下的面积。
 
-### 分类树 vs 回归树 (Classification vs Regression Tree) [第84–85页]
+    - AUC 值介于 0.5 和 1 之间。
+    - **AUC 接近 1:** 模型性能优秀，能够很好地区分正负类。
+    - **AUC 接近 0.5:** 模型性能接近随机猜测。
+    - **用途:** AUC 是衡量模型**分类能力 (discriminative ability)** 的一个良好指标，因为它不依赖于特定的分类阈值，可以衡量模型在所有可能阈值下的表现。
 
-- **分类树**：叶节点输出类别模式(mode)
-- **回归树**：叶节点输出均值(mean) 。
 
-### 剪枝与过拟合 (Pruning & Overfitting) [第86–87页]
+#### 不平衡数据处理 (Imbalanced Data Handling) (PPT, Page 19-20)
 
-- **过拟合**：树过深，训练误差低但测试误差高
-- **预剪枝**：提前停止分裂
-- **后剪枝**：先生成全树，再基于验证集剪枝 。
+- **问题 (PPT, Page 19):** 在欺诈检测中，欺诈交易（少数类）的数量通常远少于合法交易（多数类）。
 
-### 决策树优缺点 (Decision Tree Advantages & Disadvantages) [第89页]
+- **后果 (PPT, Page 19):** 导致模型偏向于多数类，对少数类（欺诈）的识别能力很差。
 
-**优点**：易解释、处理缺失值、可处理混合变量
- **缺点**：易过拟合、不稳定、离散化连续变量 。
+- 解决方案 (PPT, Page 20):
 
-### 集成学习概述 (Ensemble Learning) [第92–93页]
+  - 重采样技术 (Resampling Techniques):
 
-通过组合多个“基模型”（weak learners）提高性能与鲁棒性。分为同质集成（homogeneous）和异质集成（heterogeneous） 。
+    - 过采样 (Oversampling):
 
-### Bagging, Boosting, Stacking [第94页]
+       增加少数类样本的数量。
 
-- **Bagging**：并行训练同质模型，降低方差
-- **Boosting**：序列化训练同质模型，降低偏差
-- **Stacking**：并行训练异质模型，再训练元模型融合 。
+      - **随机过采样 (Random Oversampling):** 简单复制少数类样本。
+      - **SMOTE (Synthetic Minority Over-sampling Technique):** 通过在少数类样本之间插值来生成合成的新样本。
 
-### 自助抽样 (Bootstrap Sampling) [第95–96页]
+    - 欠采样 (Undersampling):
 
-从原始样本重复有放回抽样，生成多份子样本，再对每份子样本训练模型并汇总统计量 。
+       减少多数类样本的数量。
 
-### Bagging流程与示例 (Bagging Procedure & Example) [第97–98页]
+      - **随机欠采样 (Random Undersampling):** 随机删除多数类样本。
+      - **Tomek Links / Edited Nearest Neighbors (ENN):** 删除位于分类边界附近的多数类样本，以使边界更清晰。
 
-1. 对原始数据集抽取N个bootstrap样本
-2. 分别训练N个分类器/回归器
-3. 分类采用多数投票，回归取平均，得到最终预测 。
+  - 改变算法 (Algorithm Modification):
+
+    - **代价敏感学习 (Cost-Sensitive Learning):** 在训练过程中，给少数类（如欺诈）的错误分类更高的惩罚权重。
+    - **集成学习 (Ensemble Learning):** 结合多个模型来处理不平衡数据。
+
+#### 决策树 (Decision Tree) (PPT, Page 21-22)
+
+- **定义 (PPT, Page 21):** 一种**监督学习 (supervised learning)** 算法，用于**分类 (classification)** 和**回归 (regression)** 任务。
+
+- **结构 (PPT, Page 21):** 像一棵树，每个**内部节点 (internal node)** 代表一个特征上的测试，每个**分支 (branch)** 代表一个测试结果，每个**叶节点 (leaf node)** 代表一个分类结果或预测值。
+
+- **构建过程 (PPT, Page 22):** 递归地将数据集划分为越来越小的子集，直到子集包含相同类别的样本或达到停止条件。
+
+- 分裂标准 (Splitting Criteria) (PPT, Page 22):
+
+   用于选择最佳特征和最佳分裂点来划分数据。
+
+  - **信息增益 (Information Gain):** 基于**熵 (entropy)** 减少的量。
+  - **增益比 (Gain Ratio):** 修正信息增益，减少对多值属性的偏向。
+  - **基尼不纯度 (Gini Impurity):** 衡量集合中样本的不纯度，目标是最小化不纯度。
+
+- 优点 (PPT, Page 23):
+
+  - 易于理解和解释（**可解释性 (Interpretability)** 强）。
+  - 无需对数据进行预处理（例如，标准化）。
+  - 可以处理数值和分类数据。
+  - 对异常值不敏感。
+
+- 缺点 (PPT, Page 24):
+
+  - 容易**过拟合 (overfitting)**，尤其当树很深时。
+  - 可能产生**不稳定 (unstable)** 的模型，对数据的小变化敏感。
+  - 可能生成**偏斜 (biased)** 的树，如果训练数据中存在某些类别的优势。
+
+#### 剪枝 (Pruning) (PPT, Page 25-26)
+
+- **目的 (PPT, Page 25):** 解决决策树过拟合的问题。
+
+- **方法 (PPT, Page 25):** 移除决策树中不必要的分支或节点，使其更通用。
+
+- 类型 (PPT, Page 26):
+
+  - 预剪枝 (Pre-pruning) / 提前停止 (Early Stopping):
+
+     在树生长过程中，在达到完全拟合训练数据之前停止分裂。
+
+    - **停止条件:** 例如，达到最大深度、节点中的样本数少于某个阈值、信息增益低于某个阈值等。
+
+  - 后剪枝 (Post-pruning):
+
+     先构建完整的决策树，然后从下往上删除或合并分支。
+
+    - **方法:** 例如，基于误差减少剪枝 (Reduced Error Pruning)、代价复杂度剪枝 (Cost-Complexity Pruning)。
+
+#### 集成学习 (Ensemble Learning) (PPT, Page 27-28)
+
+- **定义 (PPT, Page 27):** 组合多个单独的**弱学习器 (weak learners)** 来创建一个更强大、更鲁棒的**强学习器 (strong learner)**。
+- **核心思想 (PPT, Page 28):** “三个臭皮匠赛过诸葛亮”，通过结合多个模型的预测来提高准确性和泛化能力。
+- 主要方法 (PPT, Page 28):
+  - **Bagging (Bootstrap Aggregating)**
+  - **Boosting**
+  - **Stacking**
+
+#### Bagging (Bootstrap Aggregating) (PPT, Page 29-31)
+
+- **概念 (PPT, Page 29):** 通过**自举采样 (bootstrap sampling)** 从原始训练数据集中创建多个**子集 (subsets)**。
+- 过程 (PPT, Page 29):
+  1. 从原始数据集（大小为 N）中进行 N 次**有放回抽样 (sampling with replacement)**，创建 T 个**自举样本 (bootstrap samples)**。
+  2. 为每个自举样本训练一个独立的基学习器 (base learner)（例如，决策树）。
+  3. 对于分类任务，使用**多数投票 (majority voting)** 来决定最终预测。
+  4. 对于回归任务，计算所有基学习器预测的**平均值 (average)**。
+- 优点 (PPT, Page 30):
+  - 减少**方差 (variance)**，从而降低过拟合的风险。
+  - 提高了模型的稳定性和鲁棒性。
+  - 可以并行训练，效率高。
+- 缺点 (PPT, Page 30):
+  - 增加了模型的**偏差 (bias)**。
+  - 模型可解释性降低。
+- **著名算法 (PPT, Page 31):** **随机森林 (Random Forest)** 是 Bagging 的一个扩展，它在每个决策树的构建过程中引入了额外的随机性（例如，每次分裂时只考虑特征的一个随机子集）。
+
+#### Boosting (PPT, Page 32-34)
+
+- **概念 (PPT, Page 32):** 顺序地训练一系列**弱学习器 (weak learners)**，每个新的学习器都专注于纠正前一个学习器的错误。
+- **核心思想 (PPT, Page 32):** “知错能改”，通过迭代优化来提高模型的整体性能。
+- 过程 (PPT, Page 33):
+  1. 初始化所有样本的权重。
+  2. 训练第一个弱学习器，并根据其预测结果调整样本权重（错误分类的样本权重增加）。
+  3. 训练下一个弱学习器，它更关注之前分类错误的样本。
+  4. 重复此过程，直到达到停止条件。
+  5. 最终预测是所有弱学习器加权组合的结果。
+- 优点 (PPT, Page 33):
+  - 通常比 Bagging 具有更高的**准确率 (accuracy)**。
+  - 能够处理复杂的数据集和关系。
+- 缺点 (PPT, Page 34):
+  - 容易过拟合，需要仔细调参。
+  - 训练过程是顺序的，难以并行。
+  - 对异常值和噪声敏感。
+- 著名算法 (PPT, Page 34):
+  - **AdaBoost (Adaptive Boosting):** 最早的 Boosting 算法之一。
+  - **梯度提升机 (Gradient Boosting Machine, GBM):** 一种更通用的 Boosting 框架。
+  - **XGBoost (eXtreme Gradient Boosting):** GBM 的优化版本，具有高效和高性能。
+  - **LightGBM / CatBoost:** 其他流行的梯度提升框架。
+
+#### Stacking (Stacked Generalization) (PPT, Page 35-36)
+
+- **概念 (PPT, Page 35):** 结合多个不同类型的模型，通过训练一个“元模型 (meta-model)”或“二级学习器 (second-level learner)”来学习如何最优地组合这些基模型的预测。
+- 过程 (PPT, Page 35):
+  1. 训练多个**基模型 (base models)**（例如，决策树、逻辑回归、SVM）。
+  2. 基模型的预测作为新的特征，输入到**元模型 (meta-model)** 中。
+  3. 元模型学习如何对基模型的预测进行加权或组合，以生成最终预测。
+- 优点 (PPT, Page 36):
+  - 能够捕捉不同模型的优势，进一步提高预测性能。
+  - 通常比单个模型或 Bagging/Boosting 表现更好。
+- 缺点 (PPT, Page 36):
+  - 复杂性高，训练时间更长。
+  - 可解释性差。
+
+#### 集成学习总结 (Summary of Ensemble Learning) (PPT, Page 37)
+
+- **提高性能 (Improve Performance):** 集成学习旨在通过结合多个模型的预测来提高机器学习模型的**准确率 (accuracy)**、**鲁棒性 (robustness)** 和**泛化能力 (generalization ability)**。
+
+
 
 ## 第七章
 
@@ -1184,141 +1314,279 @@ Precision和Recall的调和平均，综合考虑FP和FN 。
 
 ## 第八章
 
-### K折交叉验证 (K-fold Cross-Validation) [第5页]
+本次讲座的议程包括以下几个主要部分：
 
-交叉验证是在样本量非常小（如少于1000条观测）时常用的评估方法。将原始数据随机分成K个互不重叠的子集，其中K−1个子集用于**训练**（training），剩余1个子集用于**评估**（evaluation）。重复K次，使每个子集都能做一次测试集，最终将K次得到的误差（test errors）取平均，作为模型的性能估计 。
+- **神经网络 (Neural Network)** (参考之前的讲座，PPT, Page 2 提到参考 Lecture 4)
+- **其他机器学习技术 (Other ML techniques)**
+- **聚类 (Clustering)**
+- **案例研究：保险欺诈 (Case Study: Insurance Fraud)**
 
-### 选择K的取值 (How to Choose K) [第6页]
+### 样本量过小时的处理 (PPT, Page 4)
 
-- 应保证每个训练/测试组对总体具有代表性（representative）。
-- 常用K=5或10，此时既能控制偏差（bias）又能保持方差（variance）适中。
-- 当K=n时，即留一交叉验证（leave-one-out），每次用1个样本做测试，其余n−1个做训练，适用于极小数据集 。
+- **问题:** 如果拥有非常小的**样本量 (sample size)**，应该如何处理？
 
-### 多模型选择 (Model Selection via Cross-Validation) [第7页]
+### K 折交叉验证 (K-fold Cross-validation) (PPT, Page 5-6)
 
-当通过交叉验证训练得到多个模型时，可采用以下策略来选取最终模型：
+- **应用场景 (PPT, Page 5):** 当样本量非常小，例如观测数量少于 1000 时，可以使用**交叉验证 (cross-validation)**。
+- **基本思想 (PPT, Page 5):** 将原始数据集 (original dataset) 随机划分为 K 个**不相交的子集 (disjoint sets)**（或“折”，folds）。
+- 训练与测试过程 (PPT, Page 5):
+  - 在每次迭代中，使用 K-1 个子集进行模型**训练 (training)**。
+  - 剩余的 1 个子集用于模型**评估 (evaluation)** 或**测试 (testing)**。
+  - 这个过程重复 K 次，每次选择不同的子集作为测试集。
+- **结果聚合 (PPT, Page 5):** 最终，计算 K 次测试的**平均误差 (mean error)** 作为模型的性能指标。
+- 优点 (PPT, Page 6):
+  - 提高了模型评估的**可靠性 (reliability)**，因为它减少了评估结果对特定训练/测试集划分的依赖。
+  - 有效地利用了所有可用数据，每个数据点都会被用作测试集一次。
+  - 有助于降低**过拟合 (overfitting)** 的风险，因为它在多个不同的数据子集上评估模型。
+- 选择 K 值 (PPT, Page 6):
+  - K 的选择取决于数据集的大小。
+  - 常见的 K 值包括 5 和 10。
+  - 极端情况：
+    - **留一交叉验证 (Leave-one-out cross-validation, LOOCV):** K 等于样本数量 N。
+    - **K=2 (Two-fold cross-validation):** 数据集被分为两部分，交替作为训练集和测试集。
+- 注意事项 (PPT, Page 6):
+  - 为了确保结果的可靠性，最好在每次重新划分数据后进行**多次运行 (multiple runs)** K 折交叉验证，然后取平均值。
 
-1. 类似集成学习（ensemble）使用投票（voting）方法；
-2. 留一法（leave-one-out）可随机挑选一个模型，因仅差异于一个观测，其性能应相近；
-3. 使用所有观测做训练，交叉验证的性能作为对模型的独立估计 。
+### 监督学习 (Supervised Learning) (PPT, Page 8-10)
 
-### 多类别问题处理 (Handling Multiple Classes) [第8页]
+- **定义 (PPT, Page 8):** 使用**标记数据 (labeled data)** 进行学习，其中训练数据包含输入特征和对应的输出标签。
+- **目标 (PPT, Page 9):** 从输入数据中学习一个函数，使其能够对新的、未见过的数据进行准确的预测。
+- 分类 (Classification) 任务 (PPT, Page 9):
+  - **二分类 (Binary Classification):** 将数据分为两个类别，例如“欺诈”或“非欺诈”。
+  - **多分类 (Multi-class Classification):** 将数据分为两个或更多类别。
+- **回归 (Regression) 任务 (PPT, Page 9):** 预测连续的数值输出，例如预测欺诈损失金额。
+- 常见算法 (PPT, Page 10):
+  - **决策树 (Decision Trees):** 易于理解和解释，可以处理分类和回归问题。
+  - **随机森林 (Random Forests):** 一种**集成学习 (ensemble learning)** 方法，通过构建多个决策树并取平均预测来提高准确性和鲁棒性。
+  - **梯度提升 (Gradient Boosting):** 另一种强大的集成学习方法，通过顺序构建弱学习器并纠正前一个模型的错误来提高性能。
+  - **逻辑回归 (Logistic Regression):** 一种广泛使用的分类算法，特别适用于二分类问题。
+  - **支持向量机 (Support Vector Machines, SVM):** 强大的分类和回归工具，特别适用于高维数据和非线性关系。
+  - **神经网络 (Neural Networks):** 能够学习复杂模式，适用于图像识别、自然语言处理等复杂任务。
 
-在欺诈检测中，除了“Fraud”、“No fraud”二分类外，有时需使用更多标签：
+### 无监督学习 (Unsupervised Learning) (PPT, Page 11-13)
 
-- **名义型标签**（nominal labels）：如“Fraud”、“Suspected fraud”、“No fraud”。
-- **有序型标签**（ordinal labels）：如“Severe fraud”、“Medium fraud”、“Light fraud”、“No fraud”。
-   所有前述的分类模型都可扩展到多类别分类（multiclass classification）场景 。
+- **定义 (PPT, Page 11):** 处理**未标记数据 (unlabeled data)**，没有预定义的输出标签。
+- **目标 (PPT, Page 12):** 发现数据中的隐藏模式、结构或关系。
+- 常见任务 (PPT, Page 12):
+  - **聚类 (Clustering):** 将相似的数据点分组。
+  - **降维 (Dimensionality Reduction):** 减少数据的特征数量，同时保留重要信息。
+  - **关联规则学习 (Association Rule Learning):** 发现数据集中项之间的关系。
+- 常见算法 (PPT, Page 13):
+  - **K 均值聚类 (K-Means Clustering):** 一种流行的聚类算法，将数据点分配到 K 个簇中。
+  - **层次聚类 (Hierarchical Clustering):** 构建一个聚类树（树状图），表示数据的层次结构。
+  - **主成分分析 (Principal Component Analysis, PCA):** 一种线性降维技术，用于减少数据的维度。
+  - **异常检测 (Anomaly Detection):** 识别数据集中与大多数数据点显著不同的异常值或离群点。
 
-### 多类别逻辑回归 (Logistic Regression for Multiclass) [第10–11页]
+### 半监督学习 (Semi-supervised Learning) (PPT, Page 14-16)
 
-对名义型目标，可选定类别K为**基类**（base class），并基于概率总和为1的约束，分别对其他类别构建logit模型，参数通过最大后验估计（maximum a posteriori）确定 。
+- **定义 (PPT, Page 14):** 结合了**少量标记数据 (small amount of labeled data)** 和**大量未标记数据 (large amount of unlabeled data)** 进行训练。
+- **场景 (PPT, Page 15):** 当获取大量标记数据成本高昂或耗时，但未标记数据易于获得时。
+- 优势 (PPT, Page 16):
+  - **数据效率 (Data efficiency):** 能够利用未标记数据来提高模型性能，即使标记数据稀缺。
+  - **成本效益 (Cost-effectiveness):** 减少了人工标注的成本。
+  - **处理稀有事件 (Dealing with rare events):** 在欺诈检测等领域，欺诈事件通常是稀有事件，半监督学习可以利用大量正常数据来识别异常。
+- 常见方法 (PPT, Page 16):
+  - **自训练 (Self-training):** 使用少量标记数据训练初始模型，然后用该模型对未标记数据进行预测，将高置信度的预测作为新的标记数据加入训练集。
+  - **协同训练 (Co-training):** 使用两个或更多不同的模型，每个模型在不同的特征视图上训练，并相互帮助标记数据。
+  - **生成模型 (Generative Models):** 学习数据的底层分布，并利用此分布来区分标记和未标记数据。
 
-### 多类别决策树 (Decision Tree for Multiclass) [第12页]
+### 聚类 (Clustering) (PPT, Page 17)
 
-决策树同样易于扩展至多类别。将**不纯度指标**（impurity criterion）修改为适用于K类别的形式，其**划分决策**（splitting decision）和**停止决策**（stopping decision）与二分类保持一致 。
+- 本节重点介绍聚类作为一种无监督学习技术。
 
-### 多类别神经网络 (Neural Network for Multiclass) [第13页]
+#### 聚类概述 (Clustering Overview) (PPT, Page 18-20)
 
-只需将输出层神经元数增加到K，对应K个类别，预测时选择激活值最高的输出神经元。网络结构和训练方法与二分类相同 。
+- **定义 (PPT, Page 18):** 将一组对象划分为多个**簇 (clusters)**，使得同一簇内的对象彼此相似，而不同簇之间的对象彼此不相似。
+- **目的 (PPT, Page 19):** 发现数据中隐藏的模式、结构和分组。
+- **相似性度量 (Similarity Measure) (PPT, Page 19):** 通常使用**距离函数 (distance function)** 来衡量对象之间的相似度，例如**欧几里得距离 (Euclidean distance)**。距离越小，相似度越高。
+- 用途 (PPT, Page 20):
+  - **客户细分 (Customer Segmentation):** 根据购买行为、人口统计学特征等将客户分组。
+  - **异常检测 (Anomaly Detection):** 识别不属于任何已知簇的离群点。
+  - **图像分割 (Image Segmentation):** 将图像划分为具有相似特征的区域。
+  - **文档分类 (Document Classification):** 根据内容将文档分组。
 
-### 聚类分析简介 (Clustering Overview) [第23页]
+#### 聚类类型 (Types of Clustering) (PPT, Page 21-22)
 
-聚类是一种**无监督分类**（unsupervised classification），没有预定义的目标类别，簇数和簇的含义未知，且不同簇可能具有歧义，需要根据具体业务或统计指标来决定最佳簇数 。
+- 硬聚类 (Hard Clustering) (PPT, Page 21):
 
-### 连续变量距离度量 (Distance Metrics for Continuous Variables) [第25页]
+   每个数据点严格属于一个且仅一个簇。
 
-当输入为连续变量时，可使用**明可夫斯基距离**（Minkowski distance）：
+  - **代表算法:** K 均值聚类 (K-Means Clustering)。
 
-- 当p=1时，为曼哈顿距离（Manhattan distance）；
-- 当p=2时，为欧氏距离（Euclidean distance）。
-   例如两点(50,20)与(30,10)之间的欧氏距离为√[(50−30)²+(20−10)²]=√500≈22 。
+- 软聚类 (Soft Clustering) / 模糊聚类 (Fuzzy Clustering) (PPT, Page 21):
 
-### 分类变量距离度量 (Distance Metrics for Categorical Variables) [第27页]
+   每个数据点可以以一定的
 
-对二元类别（Yes/No），可用**简单匹配系数**（Simple Matching Coefficient, SMC）或**雅卡尔指数**（Jaccard Index）。
+  隶属度 (membership probability)
 
-- SMC将“Yes–Yes”和“No–No”视为同等匹配；
-- Jaccard只计算“Yes–Yes”匹配，忽略“No–No”，适用于红旗指标少而乱的场景 。
+   属于多个簇。
 
-### 聚类算法类型 (Types of Clustering Algorithms) [第30页]
+  - **代表算法:** 模糊 C 均值聚类 (Fuzzy C-Means Clustering)。
 
-- **连通性**（connectivity-based）：如层次聚类（hierarchical）按距离聚点。
-- **中心点**（centroid-based）：如K均值（K-means），以簇中心代表簇。
-- **分布式**（distribution-based）：如高斯混合模型（GMM），基于概率分布。
-- **密度型**（density-based）：如DBSCAN/OPTICS，定义高密度区域，稀疏点为噪声 。
+- 层次聚类 (Hierarchical Clustering) (PPT, Page 22):
 
-### K均值聚类原理 (K-means Clustering Basics) [第31–32页]
+   构建一个嵌套的簇层次结构。
 
-1. 指定簇数K；
-2. 随机选K个观察值为初始中心（seeds）；
-3. 将每个观察分配到最近中心；
-4. 重新计算各簇中心；
-5. 重复3–4直到中心不变或达到迭代上限 。
+  - **聚合式 (Agglomerative):** 从单个数据点开始，逐步合并最相似的簇。
+  - **分裂式 (Divisive):** 从一个包含所有数据点的簇开始，逐步将其分裂为更小的簇。
 
-### K均值聚类示例 (K-means Example, K=2) [第33–38页]
+#### K 均值聚类 (K-Means Clustering) (PPT, Page 23-26)
 
-- 随机选2个种子；
-- 将观测分配到最近中心；
-- 计算新的中心；
-- 重复分配与中心计算，直至中心收敛 。
+- **定义 (PPT, Page 23):** 一种迭代的硬聚类算法，旨在将数据点划分为 K 个簇。
+- **目标 (PPT, Page 23):** 最小化每个簇内数据点与其**质心 (centroid)** 之间的距离平方和。
+- 算法步骤 (PPT, Page 24):
+  1. **初始化 (Initialization):** 随机选择 K 个数据点作为初始质心。
+  2. **分配 (Assignment):** 将每个数据点分配到最近的质心所属的簇。
+  3. **更新 (Update):** 重新计算每个簇的质心（即该簇中所有数据点的平均值）。
+  4. **重复 (Repeat):** 重复步骤 2 和 3，直到质心不再显著移动，或者达到最大迭代次数。
+- 优点 (PPT, Page 25):
+  - 实现简单，易于理解。
+  - 计算效率高，适用于大型数据集。
+  - 收敛速度快。
+- 缺点 (PPT, Page 26):
+  - 需要预先指定 K 值。
+  - 对初始质心的选择敏感，可能收敛到局部最优解。
+  - 对**异常值 (outliers)** 敏感。
+  - 只能形成球形或凸形的簇。
 
-### K均值优缺点 (K-means Advantages & Disadvantages) [第33页]
+#### 选择最佳 K 值 (Choosing the Best K Value) (PPT, Page 27-28)
 
-**优点**：计算效率较高、易实现、可扩展到大数据集；
- **缺点**：需预先指定K、易陷入局部最优、对异常值和噪声敏感 。
+- 肘部法则 (Elbow Method) (PPT, Page 27):
+  - 计算不同 K 值下的**簇内平方和 (Within-Cluster Sum of Squares, WCSS)** 或**畸变程度 (distortion)**（即每个点到其所属簇质心的距离平方和）。
+  - 绘制 WCSS 与 K 值的关系图。
+  - 选择曲线中“肘部”点对应的 K 值，在该点之后，增加 K 值带来的 WCSS 下降幅度显著减小。
+- 轮廓系数 (Silhouette Score) (PPT, Page 28):
+  - 结合了**簇内凝聚度 (cohesion)** 和**簇间分离度 (separation)**。
+  - 轮廓系数的值介于 -1 和 1 之间。
+  - **接近 1:** 数据点与其所属簇的距离远小于到其他簇的距离，聚类效果好。
+  - **接近 0:** 数据点位于两个簇的边界附近，聚类效果不佳。
+  - **接近 -1:** 数据点可能被分配到了错误的簇。
+  - 通过计算不同 K 值下的平均轮廓系数，选择得分最高的 K 值。
 
-### 簇解释方法 (Cluster Interpretation) [第34页]
+#### DBSCAN 聚类 (DBSCAN Clustering) (PPT, Page 29-32)
 
-可比较簇内外指标分布差异，如簇C1的“近端值”（recency）低而“金额”（monetary）高，也可借助决策树将簇标签作为目标，利用监督学习技术解释聚类结果 。
+- **定义 (PPT, Page 29):** 一种基于**密度 (density-based)** 的聚类算法，能够发现任意形状的簇，并有效处理噪声点。
+- **核心思想 (PPT, Page 29):** 通过检查数据点周围邻域内的数据点密度来识别簇。
+- 关键参数 (PPT, Page 30):
+  - **ϵ (Epsilon, eps):** 指定半径，定义一个点周围的邻域。
+  - **MinPts (Minimum Points):** 定义一个核心点 (core point) 邻域内所需的最小数据点数量。
+- 数据点类型 (PPT, Page 31):
+  - **核心点 (Core Point):** 如果一个点的 ϵ 邻域内包含至少 MinPts 个数据点（包括自身），则该点为核心点。
+  - **边界点 (Border Point):** 如果一个点位于某个核心点的 ϵ 邻域内，但自身不是核心点，则为边界点。
+  - **噪声点 (Noise Point) / 离群点 (Outlier Point):** 既不是核心点也不是边界点，不属于任何簇。
+- 算法流程 (PPT, Page 32):
+  1. 随机选择一个未访问的数据点。
+  2. 如果该点是核心点，则创建一个新簇，并将其所有密度可达的邻居添加到该簇中。
+  3. 如果该点不是核心点，则标记为噪声点（暂时）。
+  4. 重复此过程，直到所有数据点都被访问。
+- 优点 (PPT, Page 32):
+  - 能够发现任意形状的簇。
+  - 能够识别噪声点。
+  - 不需要预先指定簇的数量。
+- 缺点 (PPT, Page 32):
+  - 对参数 ϵ 和 MinPts 的选择敏感。
+  - 处理密度差异大的数据集可能表现不佳。
+  - 对于高维数据，定义密度可能更具挑战性。
 
-### 聚类评估指标 (Clustering Evaluation) [第35页]
+#### 聚类在欺诈分析中的应用 (Clustering Applications in Fraud Analysis) (PPT, Page 33-34)
 
-- **组内平方和**（Within-cluster SSE, WSS）：越低簇内越同质；
-- **组间平方和**（Between-cluster SSE, BSS）：越高簇间越异质；
-   无监督场景下可结合**统计视角**与**可解释性**一起评估 。
+- 识别欺诈模式 (Identify Fraudulent Patterns) (PPT, Page 33):
+  - 将相似的欺诈交易分组，揭示常见的欺诈手法。
+  - 例如，在信用卡欺诈中，可以将具有相似地理位置、时间模式或交易金额的欺诈行为聚类。
+- 发现异常行为 (Detect Anomalous Behavior) (PPT, Page 33):
+  - 将正常交易聚类，任何不属于这些正常簇的数据点都可能被标记为异常，从而进行进一步审查。
+  - 例如，用户行为的异常聚类可能指示账户被盗用。
+- 客户细分 (Customer Segmentation) (PPT, Page 33):
+  - 识别具有高欺诈风险的客户群体，以便进行有针对性的监控。
+  - 例如，根据客户的交易历史和风险特征进行聚类。
+- 新欺诈模式发现 (New Fraud Pattern Discovery) (PPT, Page 34):
+  - 聚类可以帮助发现传统基于规则的方法可能无法识别的新兴欺诈模式。
+  - 例如，新的洗钱或保险欺诈策略。
+- 资源分配 (Resource Allocation) (PPT, Page 34):
+  - 根据聚类结果，将有限的调查资源分配给最有风险的交易或群体。
 
-### 最优簇数确定：肘部法 (Elbow Method) [第36页]
+### (案例研究) 保险欺诈 (Case Study: Insurance Fraud) (PPT, Page 35-36)
 
-1. 对不同K运行K均值并计算WSS；
-2. 绘制WSS对K曲线；
-3. 在“肘部”（曲线出现弯折）处选取K，作为最佳簇数 。
+- **背景 (PPT, Page 35):** 汽车保险欺诈是保险行业面临的重大问题，导致保费增加和公司损失。
+- **目的 (PPT, Page 36):** 识别欺诈性索赔 (fraudulent claims)，以减少损失并维护市场诚信。
 
-### 最优簇数确定：轮廓系数法 (Average Silhouette Method) [第37页]
+### 欺诈类型 (Types of Fraud) (PPT, Page 37)
 
-1. 对不同K计算各观测的轮廓系数，并取平均；
-2. 绘制平均轮廓系数对K曲线；
-3. 在最大值对应的K处选取最佳簇数 。
+- **硬欺诈 (Hard Fraud):** 故意的、预谋的欺诈行为。例如，故意制造交通事故以获取保险赔偿。
+- **软欺诈 (Soft Fraud):** 夸大合法索赔的程度或遗漏重要信息。例如，轻微事故后夸大受伤程度或车辆损失。
+- 其他欺诈类型 (Other Types of Fraud):
+  - **有组织的欺诈 (Organized Fraud):** 犯罪团伙协同作案。
+  - **内部欺诈 (Internal Fraud):** 公司内部员工的欺诈行为。
+  - **虚假索赔 (Staged Claims):** 制造虚假的事故。
+  - **夸大索赔 (Inflated Claims):** 夸大损失金额。
 
-### 保险欺诈案例 (Insurance Fraud Case Study) [第47–51页]
+#### 欺诈检测的挑战 (Challenges in Fraud Detection) (PPT, Page 38)
 
-- 保险欺诈类型包括人寿险、健康险、车险等，涉及**代理人**（agent）、**投保人**（subscriber）、**服务提供者**（provider）及合谋欺诈。
-- 欺诈情景识别需考虑主体（如假服务方、真实共谋方）、行为（夸大索赔、伪造病史等），并生成场景组合（permutation of fraud scenarios） 。
+- **数据失衡 (Imbalanced Data):** 欺诈性索赔通常远少于合法索赔，导致模型训练困难。
+- **欺诈模式演变 (Evolving Fraud Patterns):** 欺诈者不断改变策略以逃避检测。
+- **数据质量 (Data Quality):** 缺失值、不准确或不一致的数据会影响模型性能。
+- **可解释性 (Interpretability):** 复杂的机器学习模型难以解释其欺诈判断的原因。
+- **误报成本 (Cost of False Positives):** 将合法索赔错误标记为欺诈会导致客户不满和资源浪费。
 
-### 欺诈分析流程 (Fraud Analytics Methodology) [第51–54页]
+#### 欺诈检测模型 (Fraud Detection Models) (PPT, Page 39-40)
 
-1. 定义范围（scope），如针对医疗保险索赔；
-2. 场景识别（scenario identification）；
-3. 分析策略（data analytics strategies），包括特征选择、变换（transformation）、异常检测；
-4. 模型选择（model selection），本例采用**聚类分析**以最大化簇内同质性和簇间异质性 。
+- 监督学习 (Supervised Learning) (PPT, Page 39):
+  - **输入:** 索赔特征（例如，索赔类型、金额、当事人信息）和已标记的欺诈/非欺诈索赔数据。
+  - **模型:** 分类算法（例如，逻辑回归、决策树、神经网络、支持向量机、随机森林）。
+  - **输出:** 预测索赔是欺诈还是非欺诈的概率。
+- 无监督学习 (Unsupervised Learning) (PPT, Page 40):
+  - **输入:** 未标记的索赔特征。
+  - **模型:** 聚类算法（例如，K 均值、DBSCAN）、异常检测算法（例如，One-Class SVM）。
+  - **输出:** 识别出与正常模式显著不同的异常索赔。
 
-### EDA实例：医疗保险欺诈 (EDA Example: Health Insurance Fraud) [第61–63页]
+### 评估指标 (Evaluation Metrics) (PPT, Page 41-43)
 
-- 数据集来自CMS，美国医保和医疗补助服务中心；
-- 观察到**负支付**（negative payments）异常，需要核实；
-- 有28名受益人在一年内住院天数>365天，超出合理范围 。
+- 混淆矩阵 (Confusion Matrix) (PPT, Page 41):
 
-### 聚类分析结果与解读 (Cluster Analysis Results & Interpretation) [第64–68页]
+   用于可视化分类模型性能的表格。
 
-- 在7簇分析中，簇2对应长住院期、短旅行距离和高支付；簇1、5、6、7为短住院、短距离、小支付；簇3和4分别揭示新异常模式（长距离小支付、大支付短住院）。
-- 通过聚类将可疑索赔从195,343条缩减至3,718条，更便于人工审查 。
+  - **真阳性 (True Positives, TP):** 实际为欺诈，预测也为欺诈。
+  - **真阴性 (True Negatives, TN):** 实际为非欺诈，预测也为非欺诈。
+  - **假阳性 (False Positives, FP):** 实际为非欺诈，预测为欺诈（I 类错误，Type I Error）。
+  - **假阴性 (False Negatives, FN):** 实际为欺诈，预测为非欺诈（II 类错误，Type II Error）。
 
-### R语言示例：聚类分析 (Clustering in R Example) [第70–80页]
+### 处理不平衡数据 (Handling Imbalanced Data) (PPT, Page 44-46)
 
-- 数据源为BankSim模拟器生成的银行交易数据；
-- 流程包含EDA、特征工程（feature engineering）、去除无关列、标准化（scaling）、矩阵转换；
-- 使用gap_stat、wss或silhouette函数绘制碎石图（scree plot）或评估轮廓系数；
-- 调用kmeans进行聚类，并检查聚类结果与原始标签对比 。
+- **问题 (PPT, Page 44):** 欺诈检测中通常存在严重的**数据不平衡 (data imbalance)**，即欺诈样本（少数类）远少于非欺诈样本（多数类）。
+- 后果 (PPT, Page 45):
+  - 模型倾向于预测多数类，因为这样可以获得高准确率。
+  - 少数类样本被忽略，导致模型在识别欺诈方面表现不佳。
+- 解决方案 (PPT, Page 46):
+  - 过采样 (Oversampling) 少数类:
+    - **随机过采样 (Random Oversampling):** 简单复制少数类样本。
+    - **SMOTE (Synthetic Minority Over-sampling Technique):** 生成合成的少数类样本，而不是简单复制。它在少数类样本之间插值来创建新样本。
+  - 欠采样 (Undersampling) 多数类:
+    - **随机欠采样 (Random Undersampling):** 随机删除多数类样本。
+    - **Tomek Links / Edited Nearest Neighbors (ENN):** 删除位于分类边界附近的多数类样本。
+  - 调整分类器 (Adjusting Classifiers):
+    - **加权损失函数 (Weighted Loss Function):** 在训练过程中，给少数类样本更高的权重，使其对损失函数的贡献更大。
+    - **代价敏感学习 (Cost-Sensitive Learning):** 根据不同类型错误的代价（例如，假阴性的代价通常高于假阳性）来调整模型的决策边界。
+  - 集成方法 (Ensemble Methods):
+    - **Bagging 和 Boosting:** 结合多个弱学习器来提高整体性能。
+    - **EasyEnsemble / BalanceCascade:** 专门为不平衡数据设计的集成方法。
+  - **异常检测 (Anomaly Detection):** 将欺诈检测视为异常检测问题，主要关注识别与正常行为显著不同的模式。
+
+### 模型可解释性 (Model Interpretability) (PPT, Page 47)
+
+- **挑战 (PPT, Page 47):** 许多复杂的机器学习模型（例如，深度学习模型、随机森林）是**黑箱模型 (black-box models)**，难以理解它们做出预测的原因。
+- **重要性 (PPT, Page 47):** 在欺诈检测中，可解释性至关重要，因为需要向调查人员和监管机构解释为什么某笔交易被标记为欺诈，以便进行后续调查或法律行动。
+- 可解释性方法 (PPT, Page 47):
+  - **特征重要性 (Feature Importance):** 评估每个特征对模型预测的贡献程度。
+  - **局部可解释模型 (Local Interpretable Model-agnostic Explanations, LIME):** 解释单个预测的局部行为。
+  - **SHAP (SHapley Additive exPlanations):** 基于博弈论，计算每个特征对预测的贡献。
+
+### 欺诈分析的未来趋势 (Future Trends in Fraud Analytics) (PPT, Page 48)
+
+- **人工智能和机器学习的进步 (Advancements in AI and ML):** 更复杂的模型和算法将提高检测精度。
+- **大数据和实时分析 (Big Data and Real-time Analytics):** 随着数据量的增长，实时处理和分析能力变得越来越重要。
+- **图神经网络 (Graph Neural Networks, GNN):** 用于分析复杂的关系网络，更好地识别欺诈团伙。
+- **可解释性人工智能 (Explainable AI, XAI):** 提高模型的可解释性，增强信任和采纳。
+- **联邦学习 (Federated Learning):** 允许多个机构在不共享原始数据的情况下共同训练模型，保护数据隐私。
 
 ## 第九章
 
@@ -1334,7 +1602,7 @@ Precision和Recall的调和平均，综合考虑FP和FN 。
 - **常见用途:** 更常用于分类任务。
 - **基本思想:** 寻找一条线或一个**超平面 (hyperplane)**，能够最好地将数据集分成两个类别。
 
-### 决策边界 (Decision Boundary) (PPT, Page 6)
+#### 决策边界 (Decision Boundary) (PPT, Page 6)
 
 - **概念:** 决策边界 (Decision Boundary) 是将不同类别数据点分开的界限。
 - 不同维度下的表示:
@@ -1343,14 +1611,14 @@ Precision和Recall的调和平均，综合考虑FP和FN 。
   - **n 维 (n-d):** 一个超平面 (a hyperplane)
 - **最佳决策边界 (Best Decision Boundary):** 在多条可能的决策边界中，寻找能够最佳地分离两个类别的边界。例如，在图中，B2 被认为是最佳的决策边界，因为它能最大化**间隔 (margin)**。
 
-### 支持向量 (Support Vectors) 和间隔 (Margin) (PPT, Page 7-8)
+#### 支持向量 (Support Vectors) 和间隔 (Margin) (PPT, Page 7-8)
 
 - **支持向量 (Support Vectors):** 离决策边界最近的数据点。这些点对于定义决策边界至关重要。
 - **间隔 (Margin):** 支持向量与决策边界之间的距离。SVM 的目标是最大化这个间隔。
 - **最大间隔超平面 (Maximum Margin Hyperplane):** 能够最大化间隔的决策边界。
 - **作用:** 最大化间隔有助于提高模型的**泛化能力 (generalization ability)**，因为它在保持数据点尽可能远离决策边界的同时，降低了**过拟合 (overfitting)** 的风险。
 
-### 软间隔 (Soft Margin) SVM (PPT, Page 9-11)
+#### 软间隔 (Soft Margin) SVM (PPT, Page 9-11)
 
 - **问题:** 现实世界的数据通常不是**线性可分离的 (linearly separable)**，这意味着无法找到一条直线（或超平面）完美地将两个类别分开。数据集中可能存在**异常值 (outliers)** 或**噪声 (noise)**。
 
@@ -1362,30 +1630,50 @@ Precision和Recall的调和平均，综合考虑FP和FN 。
 
 - 惩罚参数 (Cost Parameter, C):
 
-   控制对错误分类的惩罚程度。
+  控制对错误分类的惩罚程度。
 
   - C 值越大，惩罚越重，模型会更倾向于减小分类错误，即使这可能导致更小的间隔。
   - C 值越小，惩罚越轻，模型会更倾向于更大的间隔，允许更多的分类错误。
 
-- 优化目标:
+- 优化目标：
 
-  w,b,ξmin21∣∣w∣∣2+Ci=1∑nξi
+  - $\min_{w, b, \xi} \ \frac{1}{2} \|w\|^2 + C \sum_{i=1}^n \xi_i$
 
-  - 其中，w 是超平面的法向量，b 是偏置项，ξi 是第 i 个数据点的松弛变量。
-  - 约束条件为： yi(w⋅xi+b)≥1−ξi ξi≥0
-  - 此目标函数旨在在最大化间隔（由 21∣∣w∣∣2 最小化实现）和最小化分类错误（由 C∑i=1nξi 最小化实现）之间取得平衡。
+  - 其中，$w$ 是超平面的法向量，$b$ 是偏置项，$\xi_i$ 是第 $i$ 个数据点的松弛变量。
 
-### 核函数 (Kernel Functions) (PPT, Page 12-14)
+  - 约束条件为：
+
+    $$
+    y_i(w \cdot x_i + b) \geq 1 - \xi_i
+    $$
+
+    $$
+    \xi_i \geq 0
+    $$
+
+  - 此目标函数旨在最大化间隔（由 $\frac{1}{2} \|w\|^2$ 最小化实现）和最小化分类错误（由 $C \sum_{i=1}^n \xi_i$ 最小化实现）之间取得平衡。
+
+#### 核函数 (Kernel Functions) (PPT, Page 12-14)
 
 - **概念:** 当数据在原始特征空间 (original feature space) 中不是线性可分离时，核函数 (Kernel Functions) 可以将数据映射到更高维的**特征空间 (feature space)**，从而使其在该新空间中变得线性可分离。
 - **核技巧 (Kernel Trick):** 避免了显式地计算高维特征，而是直接计算高维空间中的内积。这使得在实践中处理高维数据成为可能，而无需承担巨大的计算成本。
 - 常用核函数:
-  - **线性核 (Linear Kernel):** K(xi,xj)=xiTxj。适用于数据本身线性可分离的情况。
-  - **多项式核 (Polynomial Kernel):** K(xi,xj)=(γxiTxj+r)d。适用于数据具有多项式关系的情况。
-  - **径向基函数核 (Radial Basis Function Kernel, RBF Kernel) / 高斯核 (Gaussian Kernel):** K(xi,xj)=exp(−γ∣∣xi−xj∣∣2)。这是最常用的核函数之一，适用于非线性、复杂关系的数据。γ 参数控制了核函数的宽度。
-  - **Sigmoid 核 (Sigmoid Kernel):** K(xi,xj)=tanh(γxiTxj+r)。在某些神经网络中也用作激活函数。
+  - **线性核（Linear Kernel）**：  
+    $K(x_i, x_j) = x_i^T x_j$  
+    适用于数据本身线性可分离的情况。
+  - **多项式核（Polynomial Kernel）**：  
+    $K(x_i, x_j) = (\gamma x_i^T x_j + r)^d$  
+    适用于数据具有多项式关系的情况。
+  
+  - **径向基函数核（Radial Basis Function Kernel, RBF Kernel） / 高斯核（Gaussian Kernel）**：  
+    $K(x_i, x_j) = \exp(-\gamma \|x_i - x_j\|^2)$  
+    这是最常用的核函数之一，适用于非线性、复杂关系的数据。$\gamma$ 参数控制了核函数的宽度。
+  
+  - **Sigmoid 核（Sigmoid Kernel）**：  
+    $K(x_i, x_j) = \tanh(\gamma x_i^T x_j + r)$  
+    在某些神经网络中也用作激活函数。
 
-### 单类支持向量机 (One-Class SVM) (PPT, Page 15-18)
+#### 单类支持向量机 (One-Class SVM) (PPT, Page 15-18)
 
 - **目的:** 异常检测 (Anomaly Detection) 或离群点检测 (Outlier Detection)。与传统 SVM 针对分类任务不同，One-Class SVM 用于识别与正常数据模式显著不同的数据点。
 
@@ -1397,24 +1685,29 @@ Precision和Recall的调和平均，综合考虑FP和FN 。
 
 - **软间隔扩展 (Soft Margin Extension) (PPT, Page 17):** 类似标准的软间隔 SVM，One-Class SVM 也允许部分数据点（被认为是异常点）落在超平面的错误一侧或间隔内。这通过引入松弛变量 ξi 和惩罚参数 C 实现。
 
-- 优化目标 (PPT, Page 18):
+- 优化目标（PPT, Page 18）：
 
-  w,ρ,ξmin21∣∣w∣∣2+νn1i=1∑nξi−ρ
+  $\min_{w, \rho, \xi} \ \frac{1}{2} \|w\|^2 + \frac{1}{\nu n} \sum_{i=1}^{n} \xi_i - \rho$
 
-  - 其中，w 是超平面的法向量，ρ 是超平面到原点的距离，n 是训练样本的数量。
+  - 其中，$w$ 是超平面的法向量，$\rho$ 是超平面到原点的距离，$n$ 是训练样本的数量。
 
-  - ν∈(0,1]
-
-     是一个控制异常点比例的参数：
-
+  - $\nu \in (0, 1]$ 是一个控制异常点比例的参数：
     - 它为异常点（落在决策边界外部的样本）的比例设置了上限。
     - 它为支持向量（在决策边界上的样本）的比例设置了下限。
 
-  - 约束条件为： w⋅ϕ(xi)≥ρ−ξi ξi≥0
+  - 约束条件为：
+  
+    $$
+    w \cdot \phi(x_i) \geq \rho - \xi_i
+    $$
+  
+    $$
+    \xi_i \geq 0
+    $$
+  
+  - $\phi(x_i)$ 是将数据点 $x_i$ 映射到高维特征空间的函数。
 
-  - ϕ(xi) 是将数据点 xi 映射到高维特征空间的函数。
-
-### One-Class SVM 的超参数 (**ν** 和 **γ**) (PPT, Page 19-20)
+#### One-Class SVM 的超参数 (**ν** 和 **γ**) (PPT, Page 19-20)
 
 - ν (Nu):
   - 代表模型允许的异常值的预期比例，通常设置在 0 到 1 之间。
@@ -1446,7 +1739,7 @@ Precision和Recall的调和平均，综合考虑FP和FN 。
 
 - 分布概率 (PPT, Page 24):
 
-   首位数字 d(d∈{1,…,9}) 的概率为：$P(D_1=d)=\log_{10}(1+d_1)$
+   首位数字 d(d∈{1,…,9}) 的概率为：$P(D_1=d)=\log_{10}(1+\frac{1}{d})$
 
   - 根据此公式，数字 1 出现的概率约为 30.1%，数字 9 出现的概率约为 4.6%。
 
@@ -1582,31 +1875,33 @@ Precision和Recall的调和平均，综合考虑FP和FN 。
   - **频繁项集 (Frequent Itemset):** 出现频率高于预定义最小支持度 (minimum support) 的项集。
   - **关联规则 (Association Rule):** 形如 X⇒Y，表示如果购买了 X（或发生了 X），那么很可能也会购买 Y（或发生 Y）。X 称为**先行项 (antecedent)**， Y 称为**后继项 (consequent)**。
 
-- 度量标准 (Measures) (PPT, Page 41):
+- 度量标准（Measures）（PPT, Page 41）
 
-  - 支持度 (Support):
+  - **支持度（Support）**：项集在数据集中出现的频率。
 
-     项集在数据集中出现的频率。
-
-    Support(X)=Total number of transactionsNumber of transactions containing X
+    $$
+    \text{Support}(X) = \frac{\text{Number of transactions containing } X}{\text{Total number of transactions}}
+    $$
 
     - 用于衡量项集的普遍性。
 
-  - 置信度 (Confidence):
+  - **置信度（Confidence）**：规则的强度，表示在 $X$ 出现的情况下 $Y$ 出现的条件概率。
 
-     规则的强度，表示在 X出现的情况下 Y出现的条件概率。$Confidence(X⇒Y)=Support(X)Support(X∪Y)$
+    $$
+    \text{Confidence}(X \Rightarrow Y) = \frac{\text{Support}(X \cup Y)}{\text{Support}(X)}
+    $$
 
     - 用于衡量规则的可靠性。
 
-  - 提升度 (Lift):
+  - **提升度（Lift）**：衡量 $X$ 和 $Y$ 之间的关联强度是否高于随机情况。
 
-    衡量 X和 Y之间的关联强度是否高于随机情况。
+    $$
+    \text{Lift}(X \Rightarrow Y) = \frac{\text{Support}(X \cup Y)}{\text{Support}(X) \times \text{Support}(Y)} = \frac{\text{Confidence}(X \Rightarrow Y)}{\text{Support}(Y)}
+    $$
 
-    $Lift(X⇒Y)=Support(X)×Support(Y)Support(X∪Y)=Support(Y)Confidence(X⇒Y)$
-
-    - **Lift > 1:** X 和 Y 之间存在正相关。
-    - **Lift = 1:** X 和 Y 之间相互独立。
-    - **Lift < 1:** X 和 Y 之间存在负相关。
+    - $\text{Lift} > 1$：$X$ 和 $Y$ 之间存在正相关。
+    - $\text{Lift} = 1$：$X$ 和 $Y$ 之间相互独立。
+    - $\text{Lift} < 1$：$X$ 和 $Y$ 之间存在负相关。
 
 - **选择的关联规则 (Selected Association Rule) (PPT, Page 42):** 通常指置信度高于指定阈值的规则。
 
