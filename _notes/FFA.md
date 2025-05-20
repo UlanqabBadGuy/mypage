@@ -7,9 +7,11 @@ tags: [考试]
 ---
 # FFA 中文版
 
-## 第一章
+* Table of Contents
+{:toc}
 
-由于内容较多，我将分块进行详细阐述。
+
+## 第一章
 
 ### 01 财务欺诈分析 (Financial Fraud Analytics) 简介
 
