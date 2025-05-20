@@ -1320,226 +1320,639 @@ Precision和Recall的调和平均，综合考虑FP和FN 。
 
 ## 第九章
 
-### 支持向量机概述 (Support Vector Machine) [第4页]
+本次讲座的议程包括三个主要部分：
 
-支持向量机是一种**监督学习模型 (supervised learning model)**，既可用于分类 (classification) 也可用于回归 (regression)，但更常用于二分类问题。基本思想是寻找一个**超平面 (hyperplane)**，最大化两类之间的**间隔 (margin)**，以最佳地将数据分开。
+- 单类支持向量机：单类异常检测 (One-Class SVM: Anomaly Detection with a Single Class)
+- 本福特定律 (Benford's Law)
+- 案例研究 - 洗钱方案 (Case study - Money Laundering Scheme)。
 
-### 决策边界与最大化间隔 (Decision Boundary & Maximal Margin) [第5–7页]
+### 支持向量机 (Support Vector Machines, SVM) (PPT, Page 4-5)
 
-- **决策边界 (decision boundary)**：一维为点 (dot)，二维为直线 (line)，多维为超平面。
-- **支持向量 (support vectors)**：最靠近超平面的训练样本。
-- **间隔 (margin)**：支持向量到超平面的距离，SVM通过优化求解使间隔最大。
+- **定义:** 支持向量机 (Support Vector Machine, SVM) 是一种**监督学习模型 (supervised learning model)**，既可以用于**分类 (classification)** 任务，也可以用于**回归 (regression)** 任务。
+- **常见用途:** 更常用于分类任务。
+- **基本思想:** 寻找一条线或一个**超平面 (hyperplane)**，能够最好地将数据集分成两个类别。
 
-### 线性不可分与松弛变量 (Linear Non-separable & Slack Variables) [第8页]
+### 决策边界 (Decision Boundary) (PPT, Page 6)
 
-当两类数据重叠时，引入**误差项 (error term, εₖ)**，允许少量误分类，并用正则化参数**C**在“最大化间隔 (maximize margin)”与“最小化误差 (minimize error)”之间权衡。
+- **概念:** 决策边界 (Decision Boundary) 是将不同类别数据点分开的界限。
+- 不同维度下的表示:
+  - **一维 (1-d):** 一个点 (a dot)
+  - **二维 (2-d):** 一条线 (a line)
+  - **n 维 (n-d):** 一个超平面 (a hyperplane)
+- **最佳决策边界 (Best Decision Boundary):** 在多条可能的决策边界中，寻找能够最佳地分离两个类别的边界。例如，在图中，B2 被认为是最佳的决策边界，因为它能最大化**间隔 (margin)**。
 
-### 非线性分类与核技巧 (Non-linear Classification & Kernel Trick) [第9–10页]
+### 支持向量 (Support Vectors) 和间隔 (Margin) (PPT, Page 7-8)
 
-- 将数据映射到更高维特征空间（mapping function ϕ(x)）以实现线性可分。
-- **核函数 (kernel function)** 直接在原空间计算点积，避免显式映射，常见的有线性 (linear)、多项式 (polynomial)、径向基函数(RBF) 等。
+- **支持向量 (Support Vectors):** 离决策边界最近的数据点。这些点对于定义决策边界至关重要。
+- **间隔 (Margin):** 支持向量与决策边界之间的距离。SVM 的目标是最大化这个间隔。
+- **最大间隔超平面 (Maximum Margin Hyperplane):** 能够最大化间隔的决策边界。
+- **作用:** 最大化间隔有助于提高模型的**泛化能力 (generalization ability)**，因为它在保持数据点尽可能远离决策边界的同时，降低了**过拟合 (overfitting)** 的风险。
 
-### 超参数调优 (Hyperparameter Tuning) [第11–14页]
+### 软间隔 (Soft Margin) SVM (PPT, Page 9-11)
 
-- **Gamma (γ)**：决定单个训练样本影响范围，γ低→松散拟合，γ高→紧密拟合。
-- **Regularization C**：C小→允许更多违规、更大间隔；C大→强调少误分类、更紧间隔。
-- 调优流程：按40%/30%/30%划分训练/验证/测试集，网格搜索(γ,C)，选验证集最佳组合，再在训练+验证集上重训并测试。
+- **问题:** 现实世界的数据通常不是**线性可分离的 (linearly separable)**，这意味着无法找到一条直线（或超平面）完美地将两个类别分开。数据集中可能存在**异常值 (outliers)** 或**噪声 (noise)**。
 
-### SVM优缺点 (SVM Advantages & Disadvantages) [第16页]
+- **解决方案:** 软间隔 (Soft Margin) SVM 引入了**惩罚项 (penalty term)**，允许一些数据点落在间隔内或决策边界的错误一侧。
 
-**优点**：在高维空间中表现良好，仅依赖支持向量，内存高效；
- **缺点**：对大规模及高噪声数据效果差，核函数选择与调优计算量大。
+- **目标:** 在最大化间隔的同时，最小化分类错误的惩罚。
 
-### One-Class SVM 概述 (One-Class SVM: Anomaly Detection with a Single Class) [第19–21页]
+- **松弛变量 (Slack Variables, ξ):** 用于度量数据点违反间隔或位于错误一侧的程度。
 
-- 只以“正常类 (normal class)”数据训练，用于异常检测 (anomaly detection)。
-- 构造一个包围大多数正常点的超平面，落在外部的新样本视为异常 (anomaly)。
-- 常用RBF核以创建非线性边界。
+- 惩罚参数 (Cost Parameter, C):
 
-### One-Class SVM 优缺点 (Advantages & Disadvantages) [第23页]
+   控制对错误分类的惩罚程度。
 
-**优点**：仅需正常样本，无需负样本；对训练数据异常值不敏感；可处理高维数据。
- **缺点**：参数选择（核及其参数）敏感；对互异新型异常检测能力有限；决策边界难解释。
+  - C 值越大，惩罚越重，模型会更倾向于减小分类错误，即使这可能导致更小的间隔。
+  - C 值越小，惩罚越轻，模型会更倾向于更大的间隔，允许更多的分类错误。
 
-### One-Class SVM 在R中的应用示例 (One-Class SVM in R) [第24–25页]
+- 优化目标:
 
-在R中可通过指定`one-classification`和`RBF`核对数据集（通常选2个变量）进行训练与预测。
+  w,b,ξmin21∣∣w∣∣2+Ci=1∑nξi
 
-### 性能评估指标回顾 (Revision of Performance Metrics) [第28–29页]
+  - 其中，w 是超平面的法向量，b 是偏置项，ξi 是第 i 个数据点的松弛变量。
+  - 约束条件为： yi(w⋅xi+b)≥1−ξi ξi≥0
+  - 此目标函数旨在在最大化间隔（由 21∣∣w∣∣2 最小化实现）和最小化分类错误（由 C∑i=1nξi 最小化实现）之间取得平衡。
 
-- **TP, TN, FP, FN**：混淆矩阵基本构件。
-- **True Positive Rate (TPR/Recall)** = TP/(TP+FN)。
-- **False Positive Rate (FPR)** = FP/(FP+TN)。
-- **Precision** = TP/(TP+FP)。
-- **F1 Score** = 2·Precision·Recall/(Precision+Recall)。
-- **AUC (Area Under ROC Curve)**：衡量分类器在不同阈值下区分能力。
+### 核函数 (Kernel Functions) (PPT, Page 12-14)
 
-### ROC与PR曲线 (ROC Curve & Precision-Recall Curve) [第30–34页]
+- **概念:** 当数据在原始特征空间 (original feature space) 中不是线性可分离时，核函数 (Kernel Functions) 可以将数据映射到更高维的**特征空间 (feature space)**，从而使其在该新空间中变得线性可分离。
+- **核技巧 (Kernel Trick):** 避免了显式地计算高维特征，而是直接计算高维空间中的内积。这使得在实践中处理高维数据成为可能，而无需承担巨大的计算成本。
+- 常用核函数:
+  - **线性核 (Linear Kernel):** K(xi,xj)=xiTxj。适用于数据本身线性可分离的情况。
+  - **多项式核 (Polynomial Kernel):** K(xi,xj)=(γxiTxj+r)d。适用于数据具有多项式关系的情况。
+  - **径向基函数核 (Radial Basis Function Kernel, RBF Kernel) / 高斯核 (Gaussian Kernel):** K(xi,xj)=exp(−γ∣∣xi−xj∣∣2)。这是最常用的核函数之一，适用于非线性、复杂关系的数据。γ 参数控制了核函数的宽度。
+  - **Sigmoid 核 (Sigmoid Kernel):** K(xi,xj)=tanh(γxiTxj+r)。在某些神经网络中也用作激活函数。
 
-- **ROC曲线**：绘制TPR对FPR；AUC越接近1，分类性能越好。
-- **PR曲线**：绘制Precision对Recall；在类别不平衡时更具判别力。
-- 对比：ROC对不平衡敏感度低，PR对不平衡更敏感。
+### 单类支持向量机 (One-Class SVM) (PPT, Page 15-18)
 
-### 本福特定律 (Benford’s Law) [第36–40页]
+- **目的:** 异常检测 (Anomaly Detection) 或离群点检测 (Outlier Detection)。与传统 SVM 针对分类任务不同，One-Class SVM 用于识别与正常数据模式显著不同的数据点。
 
-- 自然数值分布的首位数字频率遵循对数衰减：Pr(D₁=d)=log₁₀(1+1/d)，d∈1…9。
-- 数字1出现频率最高 (~30％)，数字9最低 (~4.6％)。
+- **应用场景:** 当只有正常数据可用，而异常数据很少或难以定义时。例如，在欺诈检测中，通常只有大量的正常交易数据，而欺诈交易数据非常稀少。
 
-### 本福特定律的历史与应用条件 (History & Conditions) [第41–43页]
+- **基本思想:** 学习一个边界，能够将大部分正常数据点包围起来。任何落在该边界之外的数据点都被视为异常。
 
-- Newcomb (1881)与Benford (1938)观察到这一现象。
-- 适用数据：无固定上下限、非标识符、分布范围宽、均值小于中位数。
+- **核心思想 (PPT, Page 16):** One-Class SVM 的目标是找到一个最优的超平面，将所有训练数据点从原点 (origin) 分离出来，并且最大化从原点到该超平面的距离。
 
-### 本福特定律在欺诈检测中的作用 (Fraud Detection via Benford’s Law) [第44–46页]
+- **软间隔扩展 (Soft Margin Extension) (PPT, Page 17):** 类似标准的软间隔 SVM，One-Class SVM 也允许部分数据点（被认为是异常点）落在超平面的错误一侧或间隔内。这通过引入松弛变量 ξi 和惩罚参数 C 实现。
 
-- 真实财务或交易数据应符合本福特定律，伪造数据往往出现偏离。
-- 仅作“红旗 (red flag)”提示，需结合其他分析验证。
+- 优化目标 (PPT, Page 18):
 
-### 拟合检验：卡方检验 (Chi-square Goodness-of-Fit Test) [第47–50页]
+  w,ρ,ξmin21∣∣w∣∣2+νn1i=1∑nξi−ρ
 
-1. 自由度 df = 9–1 = 8。
-2. 计算每位数字的期望频次 Ei = n·pi。
-3. 统计量 χ² = Σ(Oi–Ei)²/Ei。
-4. 查表 p-value；若p<0.05，拒绝符合假设。
+  - 其中，w 是超平面的法向量，ρ 是超平面到原点的距离，n 是训练样本的数量。
 
-### 案例：2016美国选举数据 (2016 US Election Example) [第51–55页]
+  - ν∈(0,1]
 
-- 分析伊利诺伊州按县投票，结果χ²<临界值，未拒绝符合本福特定律。
-- 可演示如何“欺骗”本福特定律保持拟合同时篡改结果。
+     是一个控制异常点比例的参数：
 
-### 欺诈检测方法学回顾 (Fraud Analytics Methodology) [第63–65页]
+    - 它为异常点（落在决策边界外部的样本）的比例设置了上限。
+    - 它为支持向量（在决策边界上的样本）的比例设置了下限。
 
-包含范围定义 (scope)、场景识别 (scenario identification)、数据分析策略 (data analytics strategies) 及模型选择 (model selection)，强调循环迭代而非线性流程。
+  - 约束条件为： w⋅ϕ(xi)≥ρ−ξi ξi≥0
 
-### 洗钱案例：背景与数据 (Money Laundering Case Background & Data) [第70–72页]
+  - ϕ(xi) 是将数据点 xi 映射到高维特征空间的函数。
 
-- 西班牙法院真实案例，核心公司与643供应商间285,774次交易，仅26家已知欺诈。
-- 变量包括商品、地点、记录者、成本、数量、日期、供应商ID、交易金额等。
+### One-Class SVM 的超参数 (**ν** 和 **γ**) (PPT, Page 19-20)
 
-### 洗钱过程三阶段 (Money Laundering Stages) [第75页]
+- ν (Nu):
+  - 代表模型允许的异常值的预期比例，通常设置在 0 到 1 之间。
+  - 较小的 ν 值会创建一个更紧密的边界，将更多的点视为异常。
+  - 较大的 ν 值会创建一个更宽松的边界，将更少的点视为异常。
+- γ (Gamma):
+  - RBF 核函数中的参数，控制了单个训练样本的影响范围。
+  - 较小的 γ 值表示影响范围更大，模型的决策边界更平滑。
+  - 较大的 γ 值表示影响范围更小，模型的决策边界更复杂，可能导致过拟合。
+- **参数选择 (PPT, Page 20):** ν 通常通过交叉验证 (cross-validation) 进行调优。
 
-1. **投放 (Placement)**：分拆大额存款 (smurfing) 以规避报告限额。
-2. **分层 (Layering)**：跨境、多次中间交易掩盖资金来源。
-3. **整合 (Integration)**：将“洗净”资金重新投入合法经济，如房产销售、离岸贷款等。
+### 欺诈检测案例 (PPT, Page 21-22)
 
-### 数据分析测试点 (Data Analytical Tests) [第78页]
+- **场景:** 使用 One-Class SVM 进行欺诈检测。
+- **假设:** 绝大多数交易是正常的。
+- 步骤:
+  1. **训练模型:** 使用大量的正常交易数据训练 One-Class SVM 模型，使其学习正常交易的模式。
+  2. **识别异常:** 将新的交易数据输入训练好的模型。如果交易落在模型定义的“正常”区域之外，则将其标记为潜在的欺诈行为。
+- 挑战:
+  - **参数选择:** 确定最佳的 ν 和 γ 参数是关键。
+  - **数据非平稳性 (Data Non-stationarity):** 欺诈模式可能会随着时间演变，导致模型需要定期更新和重新训练。
+  - **标签数据稀缺 (Scarcity of Labeled Data):** 很难获取标记好的欺诈数据来评估模型。
 
-可检查损益表、资产负债表、销售及资产登记等，并用本福特测试、异常值检测等方法寻找洗钱痕迹。
+### 本福特定律 (Benford's Law) (PPT, Page 23-24)
+
+- **别名:** 第一位数字定律 (First-Digit Law)。
+
+- **内容:** 在许多自然产生的数值数据集中，首位数字的出现频率不是均匀分布的，而是遵循一个特定的对数分布。数字 1 作为首位数字出现的频率最高，其次是 2，以此类推，9 的出现频率最低。
+
+- 分布概率 (PPT, Page 24):
+
+   首位数字 d(d∈{1,…,9}) 的概率为：$P(D_1=d)=\log_{10}(1+d_1)$
+
+  - 根据此公式，数字 1 出现的概率约为 30.1%，数字 9 出现的概率约为 4.6%。
+
+- **适用范围:** 适用于跨越几个数量级的数据集，例如人口数据、股价、发票金额、电费账单等。
+
+- **不适用范围:** 预先设定了范围的数字（例如身份证号码、电话号码）、受人为限制的数字（例如某个固定阈值以下或以上的数据）。
+
+#### 本福特定律在欺诈分析中的应用 (PPT, Page 25-27)
+
+- **检测异常 (PPT, Page 25):** 通过比较实际数据集中首位数字的分布与本福特定律预测的分布，可以发现潜在的异常或欺诈行为。
+- **欺诈指标 (Fraud Indicator):** 如果某个数据集的首位数字分布与本福特定律显著偏离，可能表明数据是被人为操纵或伪造的。
+- **应用领域:** 审计、选举舞弊检测、财务欺诈、科学研究中的数据真实性检查等。
+- 局限性 (PPT, Page 27):
+  - **数据量要求:** 需要足够大的数据集才能显示出本福特定律的分布模式。
+  - **数据性质:** 并非所有数据都遵循本福特定律（如前所述）。
+  - **仅为指标:** 偏离本福特定律只是欺诈的潜在指标，不能作为确凿证据。需要结合其他分析方法。
+
+#### 洗钱案例研究 (Case Study - Money Laundering Scheme) (PPT, Page 28)
+
+- **洗钱 (Money Laundering):** 将非法获得的资金（“黑钱”）通过一系列交易和金融操作，使其看起来像是合法来源的资金（“白钱”）的过程。
+- **目标:** 掩盖非法资金的来源和所有权。
+
+#### 洗钱的三个阶段 (Three Stages of Money Laundering) (PPT, Page 29)
+
+1. 安置 (Placement):
+
+    将非法资金引入金融系统。
+
+   - **方法:** 小额存款、购买货币工具（如汇票、旅行支票）、兑换外币、走私现金等。
+   - **目的:** 将大量现金转换为更容易移动和隐藏的金融资产。
+
+2. 分层 (Layering):
+
+    通过复杂的交易链条混淆资金来源，使其难以追溯。
+
+   - **方法:** 频繁的银行间转账、购买和出售资产（如房地产、股票、债券）、设立空壳公司、国际汇款等。
+   - **目的:** 制造复杂的交易路径，切断资金与犯罪活动之间的联系。
+
+3. 整合 (Integration):
+
+    将洗干净的资金重新投入合法经济体系，使其看起来完全合法。
+
+   - **方法:** 投资合法企业、购买奢侈品、房地产、通过工资或股息提取资金等。
+   - **目的:** 让非法所得的资金看起来是合法商业活动的结果。
+
+#### 洗钱检测挑战 (Money Laundering Detection Challenges) (PPT, Page 30)
+
+- **数据量大 (Huge Data Volume):** 金融交易数据量庞大，难以人工审查。
+- **交易复杂性 (Complex Transactions):** 洗钱者会设计复杂的交易模式以逃避检测。
+- **误报率高 (High False Positive Rate):** 许多合法交易可能与洗钱模式相似，导致大量误报。
+- **模型可解释性 (Model Interpretability):** 需要理解模型为何将某些交易标记为可疑，以便后续调查。
+
+#### 检测洗钱的方法 (Methods to Detect Money Laundering) (PPT, Page 31-33)
+
+- 数据分析技术 (Data Analytics Techniques):
+
+  - **规则匹配 (Rule-Based Matching):** 基于预定义的洗钱模式和阈值来识别可疑交易。
+  - **统计分析 (Statistical Analysis):** 使用统计方法（如均值、标准差、离群值检测）识别异常模式。
+  - 机器学习 (Machine Learning):
+    - **监督学习 (Supervised Learning):** 需要有标记的洗钱数据，用于训练分类模型。
+    - **无监督学习 (Unsupervised Learning):** 在没有标记数据的情况下，识别异常行为或聚类可疑模式。
+    - **半监督学习 (Semi-Supervised Learning):** 结合少量标记数据和大量未标记数据进行训练。
+  - **社交网络分析 (Social Network Analysis, SNA):** 分析交易实体之间的关系网络，识别异常连接或模式。
+
+- 规则匹配 (Rule-Based Matching) (PPT, Page 32):
+
+  - **优点:** 简单、易于理解和实现。
+  - **缺点:** 缺乏灵活性，难以适应新的洗钱模式；易产生高误报率；可能被洗钱者规避。
+  - **例子:** 频繁的小额现金存款、大额现金交易、资金从多个账户流入一个账户等。
+
+- 机器学习 (Machine Learning) (PPT, Page 33):
+
+  - **优点:** 能够发现隐藏的模式，适应性强，可以处理复杂数据。
+  - **缺点:** 需要大量数据进行训练，模型的**可解释性 (interpretability)** 可能较差。
+  - 模型类型:
+    - **监督学习 (Supervised Learning):** 分类模型（如决策树、随机森林、神经网络）。
+    - **无监督学习 (Unsupervised Learning):** 聚类（如 K-Means）、异常检测（如 One-Class SVM）。
+
+- 社交网络分析 (Social Network Analysis, SNA) (PPT, Page 34-36)
+
+  - **目的:** 识别洗钱网络中的关键参与者和交易模式。
+
+  - 方法:
+
+    - **节点 (Nodes):** 参与交易的实体（个人、公司、账户）。
+    - **边 (Edges):** 交易关系（资金流动、共同联系）。
+    - **图结构 (Graph Structure):** 分析网络中的连接、密度、中心性等。
+
+  - 关键指标 (PPT, Page 35):
+
+    - 中心性 (Centrality):
+
+       衡量节点在网络中的重要性。包括：
+
+      - **度中心性 (Degree Centrality):** 与其他节点的连接数量。
+      - **介数中心性 (Betweenness Centrality):** 作为其他节点之间最短路径的桥梁数量。
+      - **接近中心性 (Closeness Centrality):** 到所有其他节点的平均距离。
+      - **特征向量中心性 (Eigenvector Centrality):** 衡量与重要节点连接的重要性。
+
+    - **社区检测 (Community Detection):** 识别网络中的紧密连接组。
+
+  - 应用 (PPT, Page 36):
+
+    - 识别可疑交易群体。
+    - 发现新的洗钱模式。
+    - 追踪资金流向。
+
+#### 基于异常的欺诈检测模型构建步骤 (Steps for Building Anomaly-Based Fraud Detection Models) (PPT, Page 37)
+
+1. **数据收集与准备 (Data Collection and Preparation):** 获取相关的交易数据、客户数据、历史欺诈数据等，并进行清洗、转换和特征工程。
+2. **特征工程 (Feature Engineering):** 从原始数据中提取和创建有用的特征，以更好地描述交易和实体行为。
+3. **模型选择 (Model Selection):** 根据问题类型和数据特性选择合适的机器学习模型（如 One-Class SVM、聚类算法等）。
+4. **模型训练 (Model Training):** 使用正常数据训练模型，使其学习正常模式。
+5. **模型评估 (Model Evaluation):** 使用各种指标（如准确率、召回率、F1 分数、AUC-ROC 曲线）评估模型的性能。
+6. **部署与监控 (Deployment and Monitoring):** 将模型部署到生产环境，并持续监控其性能，及时调整和更新。
+
+#### 示例：欺诈风险评分 (Fraud Risk Scoring) (PPT, Page 38-39)
+
+- **概念:** 为每笔交易或每个账户分配一个**欺诈风险分数 (fraud risk score)**。分数越高，表示该交易或账户是欺诈的可能性越大。
+- **阈值 (Threshold):** 设定一个阈值，超过该阈值的交易将被标记为可疑，需要人工审查或进一步调查。
+- 例子 (PPT, Page 39):
+  - 如果风险分数 > 0.9，则将交易标记为高风险。
+  - 0.7 < 风险分数 <= 0.9，则为中风险。
+  - 风险分数 <= 0.7，则为低风险。
+
+#### 关联规则分析 (Association Rule Analysis) (PPT, Page 40-42)
+
+- **目的:** 发现数据集中项之间的有趣关系或关联。
+
+- 基本概念 (PPT, Page 40):
+
+  - **项集 (Itemset):** 一组同时出现的项目（如商品、交易特征）。
+  - **频繁项集 (Frequent Itemset):** 出现频率高于预定义最小支持度 (minimum support) 的项集。
+  - **关联规则 (Association Rule):** 形如 X⇒Y，表示如果购买了 X（或发生了 X），那么很可能也会购买 Y（或发生 Y）。X 称为**先行项 (antecedent)**， Y 称为**后继项 (consequent)**。
+
+- 度量标准 (Measures) (PPT, Page 41):
+
+  - 支持度 (Support):
+
+     项集在数据集中出现的频率。
+
+    Support(X)=Total number of transactionsNumber of transactions containing X
+
+    - 用于衡量项集的普遍性。
+
+  - 置信度 (Confidence):
+
+     规则的强度，表示在 X出现的情况下 Y出现的条件概率。$Confidence(X⇒Y)=Support(X)Support(X∪Y)$
+
+    - 用于衡量规则的可靠性。
+
+  - 提升度 (Lift):
+
+    衡量 X和 Y之间的关联强度是否高于随机情况。
+
+    $Lift(X⇒Y)=Support(X)×Support(Y)Support(X∪Y)=Support(Y)Confidence(X⇒Y)$
+
+    - **Lift > 1:** X 和 Y 之间存在正相关。
+    - **Lift = 1:** X 和 Y 之间相互独立。
+    - **Lift < 1:** X 和 Y 之间存在负相关。
+
+- **选择的关联规则 (Selected Association Rule) (PPT, Page 42):** 通常指置信度高于指定阈值的规则。
+
+- 示例 (PPT, Page 43):
+
+  - 规则：If insured A AND police officer X => auto repair shop 1
+  - X = {insured A, police officer X}
+  - Support(X) = 4/10 (出现 ID#1,2,6,9)
+  - Y = {auto repair shop 1}
+  - Support(X ∪ Y) = 3/10 (出现 ID#1,6,9)
+  - Confidence(X ⇒ Y) = 3/4 = 75%
 
 ## 第十章
 
-### 社会网络分析在欺诈检测中的应用 (PPT 第1页)
+社会网络分析在欺诈检测中的应用 (Social Network Analysis for Fraud Detection)
 
-- **Social Network Analysis for Fraud Detection**
-   本讲介绍如何利用社会网络分析（Social Network Analysis）技术，挖掘网络中节点与节点之间的关系，以发现和预测潜在的欺诈行为。
+### 基本概念 (Basic Concepts)
 
-### 为什么要研究社会网络？ (PPT 第4页) 
+- **社会网络分析 (Social Network Analysis, SNA)**：SNA 是一种用于研究社会结构及其影响的工具和方法。它关注实体（如人、组织、机器等）之间的关系及其形成的模式。（来源：PPT第2页）
 
-- **Guilt-by-association（关联定罪假设）**
-   假设一个人因其与已知犯罪分子的关联而更可能参与犯罪。“Birds of same feathers flock together”（物以类聚）体现了同类节点倾向于形成团体。
-- **实际例子**
-   如果 Tom 的好友大多是犯罪分子，则 Tom 涉案风险显著增高。
+### 为什么需要研究社会网络？ (Why do we need to study social network?)
 
-### 背景知识：旅行商问题与“小世界”现象 (PPT 第5–6页) 
+- 关联犯罪 (Guilt-by-association)
 
-- **Traveling Salesman Problem (TSP)**
-   1930 年 Karl Menger 提出，寻找一条最短路径，需要经过一系列指定的“站点”。该问题在现实网络中仍属 NP-hard。
-- **Six Degrees of Separation（六度分隔）**
-   Milgram（1967）实验表明，现实人际网络的平均最短路径长度约为 6；在线社交网络（Kwak et al., 2010）平均约为 4 hops，但关系强度各异。
+  - 这个概念假设一个人因为与犯罪分子或与犯罪相关的事物有联系，而被认为有罪。
+  - “物以类聚” (Birds of same feathers flock together) 是其核心思想。
+  - 例如，如果 Tom 的好朋友是罪犯，那么 Tom 很有可能也参与了相同或类似的犯罪活动。（来源：PPT第4页）
 
-### 应用场景 (PPT 第7页) 
+### 背景知识 (Some Background)
 
-- **保险欺诈**：同一目击者或理赔人出现于多笔可疑理赔中。
-- **公司破产**：同一股东或雇员频繁关联的公司破产。
-- **舆论欺诈**：针对某产品/公司的虚假在线评论。
-- **价值**：社会网络分析能捕捉传统模型难以识别的关系模式。
+- 旅行推销员问题 (Traveling Salesman Problem, TSP)
 
-### 基本概念 — 网络组件 (PPT 第8–12页) 
+  - 该问题旨在找出连接所有给定地点，且总距离最短的路径。
+  - 数学家 Karl Menger 在1930年发现了 TSP。
+  - 这是一个在现实生活中仍然难以解决的网络问题。（来源：PPT第5页）
 
-- **Complex Network Analysis（复杂网络分析）**：研究网络结构、特性与动态变化。
+### 图论 (Graph Theory)
 
-- **Graph Theory（图论）**：用数学图（graph）来建模网络，G = (V, E)，其中 V 是节点集（vertices），E 是边集（edges）。
+- 图 (Graph)
 
-- **Directed vs. Undirected Graph**
+  - 在数学中，一个图是由一组顶点 (Vertices) 和连接这些顶点的边 (Edges) 组成的结构。
 
-  - Directed graph（有向图）：边有方向性。
-  - Undirected graph（无向图）：边无方向。
+  - 在社会网络分析中，顶点通常代表个体或实体，边则代表他们之间的关系。（来源：PPT第6页）
 
-- **Self-edge（自环）**：节点自身的连接，例如同一人账户间转账。
+- **节点/顶点 (Nodes/Vertices)**：图中的基本元素，可以代表个体、组织、事件等。
 
-- **Multi-edge（多重边）**：两节点间多条并行边，例如多次交易产生多重连接。
+- **边/链接 (Edges/Links)**：连接图中两个节点的关系。边可以是有方向的 (Directed) 或无方向的 (Undirected)。
 
-- **Hyper-edge（超边）**：同时连接多个节点，例如多人共同参加同一活动。
+### 社会网络分析基础 (Social Network Analysis Basics)
 
-- **Weighted Graph（加权图）**：边具有强度或权重
+- 社会网络 (Social Network)
 
-  - Binary weight（二元权重）：{0,1} 或 {-1,0,1}。
-  - Numeric weight（数值权重）：可表示共同事件次数或消息数量。
-  - Normalized weight（归一化权重）：一个节点所有出边权重和为 1。
+  - 由一组实体（如人、组织、机器等）和它们之间的关系组成的结构。
 
-- **Jaccard Weight（雅卡尔德权重）** (Gupte & Eliassi-Rad 2012)：
+  - 在欺诈检测中，这些实体可以是个人、银行账户、电话号码、IP 地址等，关系可以是交易、电话通话、共享地址等。（来源：PPT第7页）
 
-  wij=∣Ai∩Aj∣∣Ai∪Aj∣  w_{ij} = \frac{|A_i \cap A_j|}{|A_i \cup A_j|}  wij=∣Ai∪Aj∣∣Ai∩Aj∣
+- **节点 (Nodes)**：网络中的实体。
 
-  例如 A 参加 10 场活动，B 参加 5 场，两者共同参加 3 场，则 Jaccard = 3/(10+5−3)=1/4。
+- **边 (Edges)**：节点之间的关系。
 
-### 欺诈节点与Egonet (PPT 第12页) 
+### 图的表示 (Graph Representation)
 
-- **Fraudulent vs. Legitimate Nodes（欺诈/合法节点）**
-   根据历史记录将节点标记为“Fraud”（欺诈）或“Legitimate”（合法）。
-- **Edge Weight 表征社交强度**：与多位已标记欺诈节点相连时，节点被标为欺诈的概率更高。
-- **Egonet（节点自我网络）**：一个节点及其一阶邻居构成的子网络；在欺诈分析中通常只需一跳。
+- 邻接矩阵 (Adjacency Matrix)
 
-### 网络表示方法 (PPT 第13–15页) 
+  - 一种用矩阵来表示图的方法，其中矩阵的行和列都代表图中的节点。
+  - 矩阵中的元素 Aij 表示节点 i 和节点 j 之间是否存在边（或边的权重）。
+  - 如果 Aij=1，表示节点 i 和节点 j 之间有边；如果 Aij=0，则没有边。
+  - 对于无向图，邻接矩阵是对称的，即 Aij=Aji。
+  - 对于有向图，邻接矩阵可能不对称。（来源：PPT第8-9页）
+  
+- 邻接列表 (Adjacency List)
 
-- **Adjacency Matrix（邻接矩阵）**
-   n×n 矩阵 A，若节点 i 与 j 存在连边则 a_{ij} = 1，否则 0；稀疏矩阵对应真实社交网络的低连通度。
-- **Adjacency List（邻接表）**：对邻接矩阵的抽象列表表示。
-- **Weight Matrix（权重矩阵）**
-   若 i-j 连边则 w_{ij}=权重，否则 0。
-- **Weight List（权重表）**：对权重矩阵的列表形式表示。
+  - 一种用列表来表示图的方法，其中每个节点都有一个列表，包含其所有邻居节点。
+- 这种表示方法通常在图比较稀疏（边数相对较少）时更高效。（来源：PPT第10页）
 
-1. ### 邻居度量详解 — Degree Metrics (PPT 第16页) 
+### 网络属性 (Network Attributes)
 
-   - **Degree（度）**：节点的邻居数，即 node’s degree。对于有向图，区分 in-degree（入度）和 out-degree（出度）。
-   - **Triangles（三角数）**：与该节点形成三角形的连接数，用于衡量局部聚集性（local clustering）。
-   - **Density（密度）**：Egonet 中实际存在的边数量与可能存在的最大边数量之比（density = 2×|E|/[k×(k−1)]，k 为邻居数）。
-   - **Relational Neighbor（关联邻居）**：计算节点与其邻居在属性空间（attribute space）中的相似度加权总和。
-   - **Probabilistic Relational Neighbor（概率关联邻居）**：在关联邻居基础上，进一步将相似度归一化为概率分布，以减少高度相似节点对结果的过度影响。
+- 网络密度 (Network Density)
 
-   ### 中心性度量 — Centrality Metrics (PPT 第17页) 
+  - 网络密度是衡量网络中连接紧密程度的指标。
+  - 它计算了网络中实际存在的边数与所有可能存在的边数之间的比率。
+  - 对于无向图，可能存在的最大边数为 N(N−1)/2，其中 N 是节点数。
+  - 密度值介于 0 到 1 之间，1 表示所有节点之间都有连接（完全图），0 表示没有连接。（来源：PPT第11页）
+  - 公式：Density=N(N−1)/2E，其中 E 是实际边数，N 是节点数。（来源：PPT第12页）
+  
+- 度 (Degree)
 
-   - **Closeness Centrality（接近中心性）**：节点到所有其他节点最短路径长度之和的倒数，表征节点的传播效率。
-   - **Betweenness Centrality（中介中心性）**：所有最短路径中经过该节点的比例，衡量节点在网络信息流中的桥梁作用。
-   - **Eigenvector Centrality（特征向量中心性）**：节点与高中心性邻居相连的程度更高时，其自身中心性也更高，基于 adjacency matrix 的特征向量计算。
-   - **PageRank（网页排名算法）**：随机游走模型（random walk），节点分数受其入边节点分数累积影响，并加入阻尼因子（damping factor）。
+  - 节点的度是指与该节点相连的边的数量。
+  - 在无向图中，度就是直接连接到该节点的边的数量。
+  - 在有向图中，有入度 (In-degree) 和出度 (Out-degree)：
+    - **入度 (In-degree)**：指向该节点的边的数量。
+    - **出度 (Out-degree)**：从该节点发出的边的数量。（来源：PPT第13页）
+  - 在社会网络中，度可以表示一个人的影响力或活跃度。（来源：PPT第14页）
+  
+- 中心性 (Centrality)
 
-   ### 集体推断算法 — Collective Inference (PPT 第18页) 
+  - 中心性指标用于衡量网络中节点的重要性。
 
-   - **Iterative Classification（迭代分类）**：通过初始分类器预测节点标签，然后将预测结果作为新特征反馈，迭代更新直至收敛。
-   - **Loopy Belief Propagation（循环置信传播）**：在有环图（loopy graph）上运行的 Belief Propagation，通过消息传递（message passing）估计节点标签的边际概率。
-   - **Gibbs Sampling（吉布斯抽样）**：一种 MCMC 方法（Markov Chain Monte Carlo），通过随机采样逐步逼近节点标签的联合分布。
-   - **Relaxation Labelling（松弛标注）**：初始化标签概率后，通过最优化能量函数（energy function）迭代调整标签概率，使整体一致性最大化。
+  - 度中心性 (Degree Centrality)
 
-   ### 特征化 — Featurization (PPT 第19页) 
+    - 直接衡量一个节点连接的边的数量。度高的节点通常被认为是更重要的节点。
+  - 标准化度中心性：除以可能的最大度数，使不同规模的网络之间可以比较。
+    - 公式：Normalized_Degree_Centrality=N−1Degree(Node)，其中 N 是节点数。（来源：PPT第15页）
+  
+  - 紧密中心性 (Closeness Centrality
+  
+    - 衡量一个节点与网络中其他所有节点的距离（最短路径长度）的倒数。
+  - 紧密中心性高的节点通常能更快地将信息传播到整个网络。（来源：PPT第16页）
+    - 公式：Closeness_Centrality(Node)=∑j=id(i,j)N−1，其中 d(i,j) 是节点 i 和节点 j 之间的最短路径长度，N 是节点数。（来源：PPT第17页）
+  
+  - 中介中心性 (Betweenness Centrality)
 
-   - **Node Attribute Features（节点属性特征）**：基于节点自身属性（如账户余额、注册时间）。
-   - **Structural Features（结构特征）**：基于网络度量（如 degree、clustering coefficient）。
-   - **Relational Features（关系特征）**：基于邻居标签分布（如 fraud neighbor ratio）。
-   - **Graph Embedding（图嵌入）**：使用 DeepWalk、node2vec 等算法，将节点映射到低维向量空间以捕捉网络结构。
+    - 衡量一个节点在网络中充当“桥梁”或“中间人”的程度。
+    - 中介中心性高的节点在网络中具有重要的控制作用，因为它们处于许多最短路径上。
+    - 公式：Betweenness_Centrality(Node)=∑s=v=tσstσst(v)，其中 σst 是从节点 s 到节点 t 的最短路径总数，σst(v) 是通过节点 v 的最短路径数量。（来源：PPT第18页）
+  
+  - 特征向量中心性 (Eigenvector Centrality)
 
-   ### 二部图模型 — Bipartite Graph (PPT 第20页) 
+    - 衡量一个节点的影响力不仅取决于其连接的数量，还取决于其连接的节点的影响力。
+- 连接到高影响力节点的节点具有更高的特征向量中心性。（来源：PPT第19页）
 
-   - **定义**：节点分为两类（如 用户-商品），只有不同类别节点间存在边；用 G = (U, V, E) 表示。
-   - **应用**：分析共现关系（co-occurrence），如多个用户购买同一商品可能构成欺诈团伙。
-   - **投影图（Projection）**：将二部图投影为单一类别节点的加权图，例如用户-用户投影，根据共同购买次数设置 weight。
+### 欺诈检测中的社会网络分析 (Social Network Analysis in Fraud Detection)
 
-   ### 案例研究 — Tax Fraud Detection (PPT 第21–22页) 
+- 欺诈类型 (Types of Fraud)
 
-   - **数据集**：税务局提供的申报记录与关联账户网络。
-   - **流程**：
-     1. 构建网络（Construct Graph）：节点为纳税人，边为资金流向。
-     2. 特征提取（Extract Features）：计算 degree、eigenvector centrality、fraud neighbor ratio 等。
-     3. 模型训练（Train Classifier）：使用随机森林（Random Forest）或 GCN。
-     4. 结果评估（Evaluate）：ROC-AUC、Precision-Recall 曲线。
-   - **结果**：利用网络特征的模型相比仅使用传统财务特征，欺诈检测率提升约 15%。
+  - **孤立欺诈 (Isolated fraud)**：个人或少数人独自进行的欺诈活动，通常不涉及复杂的网络结构。
+  - **合谋欺诈 (Collusive fraud)**：多个人通过合谋或协作进行的欺诈活动，通常形成复杂的欺诈网络。（来源：PPT第20页）
+  
+- SNA在欺诈检测中的应用 (SNA application in fraud detection)
+
+  - 识别隐藏的欺诈模式。
+  - 揭示欺诈团伙之间的关系。
+  - 发现异常行为。
+  - 评估风险。（来源：PPT第20页）
+  
+- 欺诈场景 (Fraud Scenarios)
+
+  - **保险欺诈 (Insurance Fraud)**：例如，多个“受害者”在同一事故中索赔，或者不同的医生为同一病人开出相同的诊断和治疗方案。（来源：PPT第21-22页）
+  - **信用卡欺诈 (Credit Card Fraud)**：例如，通过网络发现欺诈团伙，或者识别出共享相同特征的欺诈交易。（来源：PPT第23-24页）
+  - **电信欺诈 (Telecommunications Fraud)**：例如，识别出具有异常通话模式的电话号码，或者通过电话网络发现欺诈团伙。（来源：PPT第25页）
+  - **洗钱 (Money Laundering)**：通过识别可疑的资金流向和交易网络来检测洗钱活动。（来源：PPT第26页）
+
+### 欺诈分析的步骤 (Steps for Fraud Analytics)
+
+- 理解业务背景和现有系统 (Understanding the Business Context and Existing Systems)
+
+  - 深入了解业务流程，识别欺诈的潜在点。
+  - 分析现有欺诈检测系统的优缺点。（来源：PPT第28页）
+  
+- 数据理解和准备 (Data Understanding and Preparation)
+
+  - 收集、清洗、整合数据。
+  - 特征工程 (Feature Engineering)：从原始数据中提取有用的特征。（来源：PPT第29页）
+  
+- 欺诈分析技术 (Fraud Analytics Techniques)
+
+  - **描述性分析 (Descriptive Analytics)**：通过汇总和可视化数据来理解欺诈的特征和模式。
+  - **预测性分析 (Predictive Analytics)**：构建模型来预测未来的欺诈行为。
+  - **规定性分析 (Prescriptive Analytics)**：提供建议，指导如何应对欺诈行为。（来源：PPT第30页）
+  
+- 模型部署、监控和评估 (Model Deployment, Monitoring, and Evaluation)
+
+  - 将模型集成到实际系统中。
+  - 持续监控模型的性能。
+  - 定期评估模型的有效性并进行调整。（来源：PPT第31页）
+
+### 欺诈数据分析方法 (Fraud Data Analytics Methodology)
+
+- 欺诈情景法 (Fraud Scenario Approach)
+
+  - 识别可能的欺诈情景，并为每个情景开发检测规则或模型。
+  - 这种方法侧重于具体欺诈类型的检测。（来源：PPT第32页）
+  
+- **迭代和适应性 (Iterative and Adaptive)**：欺诈检测是一个持续的过程，需要不断地调整和改进模型。（来源：PPT第33页）
+
+### 监督式欺诈检测模型 (Supervised Fraud Detection Models)
+
+- 监督式学习 (Supervised Learning)
+
+  - 使用带有标签（已知欺诈或非欺诈）的数据集来训练模型。
+  - 模型学习输入特征与输出标签之间的映射关系。（来源：PPT第34页）
+  
+- 模型选择 (Model Selection)
+
+  - 选择适合特定欺诈检测任务的机器学习模型。
+  - 常见的模型包括逻辑回归、决策树、支持向量机、神经网络等。（来源：PPT第34页）
+  
+- 模型评估 (Model Evaluation)
+
+  - 使用各种指标来评估模型的性能。
+
+  - 混淆矩阵 (Confusion Matrix)
+
+    - 用于展示分类模型性能的表格。
+  - **真阳性 (True Positives, TP)**：实际是欺诈，模型预测为欺诈。
+    - **真阴性 (True Negatives, TN)**：实际不是欺诈，模型预测为非欺诈。
+  - **假阳性 (False Positives, FP)**：实际不是欺诈，模型预测为欺诈（I类错误）。
+    - **假阴性 (False Negatives, FN)**：实际是欺诈，模型预测为非欺诈（II类错误）。（来源：PPT第35-36页）
+    
+  - 准确率 (Accuracy)
+  
+    ：
+
+    - 所有正确预测的样本占总样本的比例。
+  - 公式：Accuracy=TP+TN+FP+FNTP+TN
+    - 在欺诈检测中，由于欺诈样本通常很少，准确率可能不是最好的指标。（来源：PPT第37页）
+
+  - 精确率 (Precision)
+  
+    - 在所有被模型预测为欺诈的样本中，实际是欺诈的比例。
+  - 衡量模型识别欺诈的准确性，减少误报。
+    - 公式：Precision=TP+FPTP（来源：PPT第38页）
+  
+  - 召回率 (Recall) / 敏感度 (Sensitivity) / 真阳性率 (True Positive Rate, TPR)
+
+    - 在所有实际是欺诈的样本中，被模型正确识别出来的比例。
+    - 衡量模型发现欺诈的能力，减少漏报。
+    - 公式：Recall=TP+FNTP（来源：PPT第39页）
+  
+  - F1分数 (F1-score)
+
+    - 精确率和召回率的调和平均值。
+  - 综合考虑了精确率和召回率，尤其在类别不平衡的数据集中非常有用。
+    - 公式：F1=2×Precision+RecallPrecision×Recall（来源：PPT第40页）
+    
+  - ROC曲线 (Receiver Operating Characteristic Curve)
+
+    - 绘制了真阳性率 (TPR) 和假阳性率 (False Positive Rate, FPR) 在不同分类阈值下的关系。
+  - **假阳性率 (FPR)**：所有实际不是欺诈的样本中，被模型错误预测为欺诈的比例。
+    - 公式：FPR=FP+TNFP
+  - 曲线越靠近左上角，模型性能越好。（来源：PPT第41-42页）
+  
+  - AUC (Area Under the Curve)
+  
+  - ROC曲线下的面积。
+    - AUC值越大，模型性能越好。
+  - AUC为1表示完美分类器，AUC为0.5表示随机分类器。（来源：PPT第43页）
+    
+  - KS统计量 (Kolmogorov-Smirnov Statistic)
+  
+    - 衡量好客户和坏客户累计分布之间最大距离的指标。
+  - KS值越大，模型区分好坏客户的能力越强。（来源：PPT第44-45页）
+  
+- 升力图 (Lift Chart)
+  
+  - 衡量模型相对于随机猜测的提升效果。
+    - 通过比较模型在识别目标事件（如欺诈）方面的能力与随机选择的能力来评估模型的有效性。（来源：PPT第46-47页）
+  
+  - 增益图 (Gain Chart)
+
+    - 显示了随着考虑更多样本，模型识别目标事件的比例。
+  - 通常用于评估模型在不同召回率水平下的表现。（来源：PPT第48-49页）
+
+### 非监督式欺诈检测模型 (Unsupervised Fraud Detection Models)
+
+- 非监督式学习 (Unsupervised Learning)
+
+  - 不对数据进行标签，而是通过发现数据中的内在模式和结构来进行学习。
+  - 常用于异常检测 (Anomaly Detection)，即识别与大多数数据模式不符的异常点。（来源：PPT第50页）
+  
+- 异常检测 (Anomaly Detection)
+
+  - 识别数据中不符合预期行为模式的离群点。
+  - 在欺诈检测中，欺诈行为通常是异常的，因此异常检测模型可以有效地发现它们。（来源：PPT第51页）
+  
+- 非监督式学习算法 (Unsupervised Learning Algorithms)
+
+  - 聚类 (Clustering)
+
+    - 将数据点分组，使同一组内的点相似，不同组间的点不相似。
+  - 异常点可能不属于任何现有簇，或者形成非常小的簇。（来源：PPT第52页）
+    - **k-Means**：一种流行的聚类算法，将数据点分配到最近的k个中心点所在的簇。（来源：PPT第53页）
+  
+  - 离群点分析 (Outlier Analysis)
+  
+    - 专门用于识别数据中的异常点。
+- **LOF (Local Outlier Factor)**：基于密度的局部异常因子算法。它衡量一个数据点相对于其邻居的局部密度。局部密度显著低于其邻居的数据点被认为是异常点。（来源：PPT第54页）
+
+### 其他欺诈检测技术 (Other Fraud Detection Techniques)
+
+- 规则引擎 (Rule Engines)
+
+  - 基于预定义的业务规则来识别欺诈。
+  - 优点是易于理解和解释，但缺点是难以适应新的欺诈模式，且规则维护成本高。（来源：PPT第55页）
+  
+- 生成式AI在金融欺诈检测中的作用 (Generative AI’s Role in Financial Fraud Detection)
+
+  - 生成式AI可以用于合成欺诈数据，以扩充数据集，解决欺诈样本稀少的问题。
+  - 也可以用于生成对抗性样本，帮助测试和增强欺诈检测模型的鲁棒性。
+  - 还可以通过学习正常的金融交易模式，生成“正常”交易数据，从而更好地识别异常模式。（来源：PPT第56页）
+
+### 模型可解释性 (Model Explainability)
+
+- 可解释性 (Explainability)
+
+  - 模型可解释性是指理解模型如何做出预测或决策的能力。
+  - 在欺诈检测中，可解释性尤为重要，因为这有助于调查人员理解欺诈的机制，并采取相应的措施。（来源：PPT第57页）
+  
+- “黑箱”模型 (“Black Box” Models)
+
+  - 指那些内部工作机制复杂，难以理解其决策过程的模型，例如深度学习模型。（来源：PPT第58页）
+
+- 可解释性技术 (Explainability Techniques)
+
+  - LIME (Local Interpretable Model-agnostic Explanations)
+
+    - 局部解释，通过对输入样本进行微扰，观察模型预测的变化，从而解释单个预测。
+  - 与模型无关 (Model-agnostic)，可以用于解释任何机器学习模型。（来源：PPT第59页）
+  
+- SHAP (SHapley Additive exPlanations)
+  
+    - 基于博弈论，计算每个特征对模型预测的贡献。
+- 提供全局和局部解释。（来源：PPT第60页）
+
+### 模型评估指标回顾 (Recap of Model Evaluation Metrics)
+
+- 准确率 (Accuracy)
+
+  - 适用于平衡数据集。
+  - 在欺诈检测中，由于类别不平衡，可能导致误导性结果。（来源：PPT第62页）
+  
+- 精确率 (Precision)
+
+  - 关注模型预测为正例（欺诈）的样本中有多少是真正的正例。
+  - 在高召回率的情况下，可以通过降低精确率来增加召回率。（来源：PPT第63页）
+  
+- 召回率 (Recall)
+
+  - 关注所有真正的正例中有多少被模型正确识别。
+  - 在高精确率的情况下，可以通过降低召回率来增加精确率。（来源：PPT第64页）
+  
+- F1分数 (F1-score)
+
+  - 精确率和召回率的调和平均值，在不平衡数据集上表现良好。（来源：PPT第65页）
+
+- AUC-ROC (Area Under the Receiver Operating Characteristic Curve)
+
+  - 衡量模型在不同分类阈值下的区分能力。
+  - 对不平衡数据集不敏感，是评估欺诈检测模型的重要指标。（来源：PPT第66页）
+  
+- 平均精确率 (Average Precision, AP)
+
+  - 通常用于评估在不平衡数据集上模型的性能，特别是在信息检索和目标检测等领域。
+  - 是精确率-召回率曲线下的面积。（来源：PPT第67页）
+  
+- R-squared (R2) / 决定系数 (Coefficient of Determination)
+
+  - 用于回归模型，表示输入变量解释输出变量变异的程度。
+  - R2 越高，模型对输出变量的解释能力越强。
+  - 公式：R2=1−SStotSSres，其中 SSres 是残差平方和，SStot 是总平方和。
+  - R2 可以帮助我们比较当前模型与基线值（例如均值）的优劣。（来源：PPT第73-74页）
