@@ -869,313 +869,147 @@ tags: [考试]
 
 ## 第六章
 
-本次讲座的议程包括以下几个主要部分：
+#### 1. **不平衡数据集（Imbalanced Dataset）**（Page 5-15）
 
-- **不平衡数据处理 (Imbalance Data Handling)**
-- 机器学习算法 (ML Algorithm)
-  - **线性回归 (Linear Regression)**
-  - **逻辑回归 (Logistic Regression)**
-- **分类模型性能评估 (Performance Evaluation for classification models)**
-- **决策树 (Decision Tree)**
-- **集成学习 (Ensemble Learning)**
+- **定义**（Page 5）  
+  类别分布不均匀的分类问题，包含多数类（Majority Class）和少数类（Minority Class）。  
+- **问题**（Page 6）  
+  - 模型偏向多数类（Bias towards Majority Class），忽略少数类。  
+  - 轻微不平衡（如4:6）仍可训练，严重不平衡需处理。  
+- **处理方法**：  
+  - **过采样（Over-sampling）**（Page 9）：复制少数类样本（如SMOTE）。  
+  - **欠采样（Under-sampling）**（Page 10）：减少多数类样本。  
+  - **ROSE**（Page 12）：结合过采样与欠采样，生成合成数据。  
+  - **SMOTE**（Page 13-14）：基于K近邻生成合成样本，但可能引入噪声。  
+  - **ADASYN**（Page 15）：自适应生成样本，解决类别重叠问题。  
 
-#### 样本数据集 (Sample Data Set) (PPT, Page 4)
+---
 
-- **数据划分 (Split Data):** 将样本数据集划分为 2-3 个子数据集。
+#### 2. **线性回归（Linear Regression）**（Page 17-26）
+- **模型公式**（Page 17）  
+  $Y = \beta_0 + \beta_1 X_1 + \ldots + \beta_N X_N$
+- **拟合方法**（Page 18）  
+  最小化均方误差（MSE, Mean Squared Error）：  
+  $MSE = \frac{1}{n} \sum_{i=1}^n (Y_i - \hat{Y}_i)^2$
+- **性能评估指标**（Page 22-25）  
+  - **MAE（Mean Absolute Error）**：$\frac{1}{N} \sum |y_i - \hat{y}_i|$（Page 23）。  
+  - **MSE/RMSE**：对异常值敏感（Page 23）。  
+  - **R-squared（R²）**（Page 24）：  
+    $R^2 = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \bar{y})^2}$
+    解释变量对目标变量的贡献，值越接近1越好。  
+  - **Adjusted R-squared**（Page 25）：  
+    $Adjusted \, R^2 = 1 - \frac{(1 - R^2)(N - 1)}{N - p - 1}$  
+    惩罚无关变量，避免过拟合。  
+- **优缺点**（Page 26）  
+  - 优点：可解释性（Interpretability）、计算高效（Computational Efficiency）。  
+  - 缺点：对异常值敏感（Sensitive to Outliers）、需满足线性假设。  
 
-- 训练数据 (Train Data):
+---
 
-   用于构建模型。包含客户年龄 (Customer Age)、收入 (Income)、性别 (Gender)、欺诈 (Fraud) 标签等特征 (features)。其中“欺诈”通常是一个二元目标变量 (Target)，例如 1 表示欺诈，0 表示非欺诈。
-
-  - **示例模型:** PPT 中给出了一个逻辑回归的公式示例： P(Fraud ∣age, income,...)=1+e−(0.10+0.50⋅age+0.0034⋅income+...)1
-
-- **测试数据 (Test Data):** 用于应用（Apply）训练好的模型，并得到欺诈分数 (Fraud Score)。例如，对新客户 Emma、Will、Dan 进行欺诈风险评估。
-
-#### 机器学习算法 (Machine Learning Algorithms) (PPT, Page 5)
-
-本节将介绍一些常用的机器学习算法。
-
-#### 线性回归 (Linear Regression) (PPT, Page 6-7)
-
-- **定义 (PPT, Page 6):** 一种**监督学习 (supervised learning)** 算法，用于预测**连续变量 (continuous variable)** 的值。
-
-- **基本思想 (PPT, Page 6):** 找到一条最佳拟合直线（或更高维的超平面），以描述一个**因变量 (dependent variable)** 和一个或多个**自变量 (independent variables)** 之间的线性关系。
-
-- 模型公式 (PPT, Page 7):
-
-  Y=β0+β1X1+β2X2+⋯+βnXn+ϵ
-
-  - Y: 因变量 (Dependent Variable)
-  - β0: 截距 (Intercept)
-  - β1,β2,…,βn: 回归系数 (Regression Coefficients)，表示每个自变量对因变量的影响。
-  - X1,X2,…,Xn: 自变量 (Independent Variables)
-  - ϵ: 误差项 (Error Term)，表示模型未能解释的部分。
-
-- 目标 (PPT, Page 7):
-
-   找到使
-
-  残差平方和 (Sum of Squared Residuals, SSR)
-
-   最小化的 
-
-  β
-
-   值。
-
-  SSR=i=1∑N(Yi−Yi^)2
-
-  - Yi: 实际值 (Actual Value)
-  - Yi^: 预测值 (Predicted Value)
-
-#### 逻辑回归 (Logistic Regression) (PPT, Page 8-10)
-
-- **定义 (PPT, Page 8):** 一种**分类 (classification)** 算法，用于预测**分类变量 (categorical variable)** 的概率，通常用于**二分类 (binary classification)** 问题。
-
-- **应用 (PPT, Page 8):** 例如预测客户是否会欺诈 (Fraud or not Fraud)。
-
-- **核心思想 (PPT, Page 9):** 不直接预测类别，而是预测某个事件发生的**概率 (probability)**。然后根据概率和设定的**阈值 (threshold)** 将数据点分类。
-
-- Sigmoid 函数 (Sigmoid Function) (PPT, Page 9):
-
-   逻辑回归使用 Sigmoid 函数将线性回归的输出转换为 0 到 1 之间的概率值。
-
-  P(Y=1∣X)=1+e−(β0+β1X1+⋯+βnXn)1
-
-  - 这个函数将任意实数映射到 (0, 1) 区间。
-
-- 优点 (PPT, Page 10):
-
-  - 计算效率高，易于实现。
-  - 输出是概率值，易于解释。
-  - 在许多二分类问题中表现良好。
-
-- 缺点 (PPT, Page 10):
-
-  - 假设特征之间是线性关系，不适合处理非线性关系。
-  - 对**异常值 (outliers)** 敏感。
-  - 可能受到**多重共线性 (multicollinearity)** 的影响。
-
-#### 分类模型性能评估 (Performance Evaluation for Classification Models) (PPT, Page 11)
-
-本节将介绍如何评估分类模型的性能。
-
-#### 混淆矩阵 (Confusion Matrix) (PPT, Page 12-13)
-
-- **定义 (PPT, Page 12):** 用于可视化分类模型性能的表格，尤其适用于多分类问题，但在这里主要用于二分类的解释。
-- 组成部分 (PPT, Page 13):
-  - **真阳性 (True Positives, TP):** 实际为正类，预测也为正类。
-  - **真阴性 (True Negatives, TN):** 实际为负类，预测也为负类。
-  - **假阳性 (False Positives, FP):** 实际为负类，预测为正类（**I 类错误 (Type I Error)** 或**误报 (False Alarm)**）。
-  - **假阴性 (False Negatives, FN):** 实际为正类，预测为负类（**II 类错误 (Type II Error)** 或**漏报 (Miss)**）。
-- 在欺诈检测中的含义 (PPT, Page 13):
-  - **TP:** 实际欺诈被识别为欺诈。
-  - **TN:** 实际非欺诈被识别为非欺诈。
-  - **FP:** 实际非欺诈被误识别为欺诈。
-  - **FN:** 实际欺诈被漏识别为非欺诈（这是最危险的错误，因为它意味着欺诈行为未被发现）。
-
-#### 评估指标 (Evaluation Metrics) (PPT, Page 14-16)
-
-模型评估指标
-
-- **准确率（Accuracy）**：正确预测的样本占总样本的比例。
-
+#### 3. **逻辑回归（Logistic Regression）**（Page 27-37）
+- **模型公式**（Page 28）  
+  Sigmoid函数转换概率：  
   $$
-  \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+  P = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X_1 + \ldots + \beta_N X_N)}}
   $$
-
-  - 问题：当数据严重不均衡时，准确率可能具有误导性（例如，即使模型将所有样本都预测为非欺诈，若欺诈样本很少，准确率仍然会很高）。
-
-- **精确率（Precision）/ 查准率（Positive Predictive Value）**：预测为正样本中，实际为正样本的比例。
-
-  $$
-  \text{Precision} = \frac{TP}{TP + FP}
-  $$
-
-  - 关注模型预测的精确性，降低误报。
-
-- **召回率（Recall）/ 查全率（Sensitivity）**：实际为正样本的样本中，被模型正确识别为正样本的比例。
-
-  $$
-  \text{Recall} = \frac{TP}{TP + FN}
-  $$
-
-  - 关注模型捕获欺诈样本的能力，降低漏报。
-
-- **F1 分数（F1-Score）**：精确率和召回率的调和平均数（harmonic mean），综合考虑两个指标的表现。
-
-  $$
-  F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
-  $$
-
-  - 在数据失衡时，F1 分数是比准确率更好的**评估指标**。
-
-- **接收者操作特征曲线（ROC Curve）与曲线下面积（AUC）**：
-
-  - ROC 曲线：刻画不同分类阈值下的真正率（True Positive Rate, TPR）与假正率（False Positive Rate, FPR）之间的关系。
-
-    $$
-    \text{FPR} = \frac{FP}{FP + TN}
-    $$
-
-- 
-
-  - AUC (PPT, Page 18):
-
-     ROC 曲线下的面积。
-
-    - AUC 值介于 0.5 和 1 之间。
-    - **AUC 接近 1:** 模型性能优秀，能够很好地区分正负类。
-    - **AUC 接近 0.5:** 模型性能接近随机猜测。
-    - **用途:** AUC 是衡量模型**分类能力 (discriminative ability)** 的一个良好指标，因为它不依赖于特定的分类阈值，可以衡量模型在所有可能阈值下的表现。
-
-
-#### 不平衡数据处理 (Imbalanced Data Handling) (PPT, Page 19-20)
-
-- **问题 (PPT, Page 19):** 在欺诈检测中，欺诈交易（少数类）的数量通常远少于合法交易（多数类）。
-
-- **后果 (PPT, Page 19):** 导致模型偏向于多数类，对少数类（欺诈）的识别能力很差。
-
-- 解决方案 (PPT, Page 20):
-
-  - 重采样技术 (Resampling Techniques):
-
-    - 过采样 (Oversampling):
-
-       增加少数类样本的数量。
-
-      - **随机过采样 (Random Oversampling):** 简单复制少数类样本。
-      - **SMOTE (Synthetic Minority Over-sampling Technique):** 通过在少数类样本之间插值来生成合成的新样本。
-
-    - 欠采样 (Undersampling):
-
-       减少多数类样本的数量。
-
-      - **随机欠采样 (Random Undersampling):** 随机删除多数类样本。
-      - **Tomek Links / Edited Nearest Neighbors (ENN):** 删除位于分类边界附近的多数类样本，以使边界更清晰。
-
-  - 改变算法 (Algorithm Modification):
-
-    - **代价敏感学习 (Cost-Sensitive Learning):** 在训练过程中，给少数类（如欺诈）的错误分类更高的惩罚权重。
-    - **集成学习 (Ensemble Learning):** 结合多个模型来处理不平衡数据。
-
-#### 决策树 (Decision Tree) (PPT, Page 21-22)
-
-- **定义 (PPT, Page 21):** 一种**监督学习 (supervised learning)** 算法，用于**分类 (classification)** 和**回归 (regression)** 任务。
-
-- **结构 (PPT, Page 21):** 像一棵树，每个**内部节点 (internal node)** 代表一个特征上的测试，每个**分支 (branch)** 代表一个测试结果，每个**叶节点 (leaf node)** 代表一个分类结果或预测值。
-
-- **构建过程 (PPT, Page 22):** 递归地将数据集划分为越来越小的子集，直到子集包含相同类别的样本或达到停止条件。
-
-- 分裂标准 (Splitting Criteria) (PPT, Page 22):
-
-   用于选择最佳特征和最佳分裂点来划分数据。
-
-  - **信息增益 (Information Gain):** 基于**熵 (entropy)** 减少的量。
-  - **增益比 (Gain Ratio):** 修正信息增益，减少对多值属性的偏向。
-  - **基尼不纯度 (Gini Impurity):** 衡量集合中样本的不纯度，目标是最小化不纯度。
-
-- 优点 (PPT, Page 23):
-
-  - 易于理解和解释（**可解释性 (Interpretability)** 强）。
-  - 无需对数据进行预处理（例如，标准化）。
-  - 可以处理数值和分类数据。
-  - 对异常值不敏感。
-
-- 缺点 (PPT, Page 24):
-
-  - 容易**过拟合 (overfitting)**，尤其当树很深时。
-  - 可能产生**不稳定 (unstable)** 的模型，对数据的小变化敏感。
-  - 可能生成**偏斜 (biased)** 的树，如果训练数据中存在某些类别的优势。
-
-#### 剪枝 (Pruning) (PPT, Page 25-26)
-
-- **目的 (PPT, Page 25):** 解决决策树过拟合的问题。
-
-- **方法 (PPT, Page 25):** 移除决策树中不必要的分支或节点，使其更通用。
-
-- 类型 (PPT, Page 26):
-
-  - 预剪枝 (Pre-pruning) / 提前停止 (Early Stopping):
-
-     在树生长过程中，在达到完全拟合训练数据之前停止分裂。
-
-    - **停止条件:** 例如，达到最大深度、节点中的样本数少于某个阈值、信息增益低于某个阈值等。
-
-  - 后剪枝 (Post-pruning):
-
-     先构建完整的决策树，然后从下往上删除或合并分支。
-
-    - **方法:** 例如，基于误差减少剪枝 (Reduced Error Pruning)、代价复杂度剪枝 (Cost-Complexity Pruning)。
-
-#### 集成学习 (Ensemble Learning) (PPT, Page 27-28)
-
-- **定义 (PPT, Page 27):** 组合多个单独的**弱学习器 (weak learners)** 来创建一个更强大、更鲁棒的**强学习器 (strong learner)**。
-- **核心思想 (PPT, Page 28):** “三个臭皮匠赛过诸葛亮”，通过结合多个模型的预测来提高准确性和泛化能力。
-- 主要方法 (PPT, Page 28):
-  - **Bagging (Bootstrap Aggregating)**
-  - **Boosting**
-  - **Stacking**
-
-#### Bagging (Bootstrap Aggregating) (PPT, Page 29-31)
-
-- **概念 (PPT, Page 29):** 通过**自举采样 (bootstrap sampling)** 从原始训练数据集中创建多个**子集 (subsets)**。
-- 过程 (PPT, Page 29):
-  1. 从原始数据集（大小为 N）中进行 N 次**有放回抽样 (sampling with replacement)**，创建 T 个**自举样本 (bootstrap samples)**。
-  2. 为每个自举样本训练一个独立的基学习器 (base learner)（例如，决策树）。
-  3. 对于分类任务，使用**多数投票 (majority voting)** 来决定最终预测。
-  4. 对于回归任务，计算所有基学习器预测的**平均值 (average)**。
-- 优点 (PPT, Page 30):
-  - 减少**方差 (variance)**，从而降低过拟合的风险。
-  - 提高了模型的稳定性和鲁棒性。
-  - 可以并行训练，效率高。
-- 缺点 (PPT, Page 30):
-  - 增加了模型的**偏差 (bias)**。
-  - 模型可解释性降低。
-- **著名算法 (PPT, Page 31):** **随机森林 (Random Forest)** 是 Bagging 的一个扩展，它在每个决策树的构建过程中引入了额外的随机性（例如，每次分裂时只考虑特征的一个随机子集）。
-
-#### Boosting (PPT, Page 32-34)
-
-- **概念 (PPT, Page 32):** 顺序地训练一系列**弱学习器 (weak learners)**，每个新的学习器都专注于纠正前一个学习器的错误。
-- **核心思想 (PPT, Page 32):** “知错能改”，通过迭代优化来提高模型的整体性能。
-- 过程 (PPT, Page 33):
-  1. 初始化所有样本的权重。
-  2. 训练第一个弱学习器，并根据其预测结果调整样本权重（错误分类的样本权重增加）。
-  3. 训练下一个弱学习器，它更关注之前分类错误的样本。
-  4. 重复此过程，直到达到停止条件。
-  5. 最终预测是所有弱学习器加权组合的结果。
-- 优点 (PPT, Page 33):
-  - 通常比 Bagging 具有更高的**准确率 (accuracy)**。
-  - 能够处理复杂的数据集和关系。
-- 缺点 (PPT, Page 34):
-  - 容易过拟合，需要仔细调参。
-  - 训练过程是顺序的，难以并行。
-  - 对异常值和噪声敏感。
-- 著名算法 (PPT, Page 34):
-  - **AdaBoost (Adaptive Boosting):** 最早的 Boosting 算法之一。
-  - **梯度提升机 (Gradient Boosting Machine, GBM):** 一种更通用的 Boosting 框架。
-  - **XGBoost (eXtreme Gradient Boosting):** GBM 的优化版本，具有高效和高性能。
-  - **LightGBM / CatBoost:** 其他流行的梯度提升框架。
-
-#### Stacking (Stacked Generalization) (PPT, Page 35-36)
-
-- **概念 (PPT, Page 35):** 结合多个不同类型的模型，通过训练一个“元模型 (meta-model)”或“二级学习器 (second-level learner)”来学习如何最优地组合这些基模型的预测。
-- 过程 (PPT, Page 35):
-  1. 训练多个**基模型 (base models)**（例如，决策树、逻辑回归、SVM）。
-  2. 基模型的预测作为新的特征，输入到**元模型 (meta-model)** 中。
-  3. 元模型学习如何对基模型的预测进行加权或组合，以生成最终预测。
-- 优点 (PPT, Page 36):
-  - 能够捕捉不同模型的优势，进一步提高预测性能。
-  - 通常比单个模型或 Bagging/Boosting 表现更好。
-- 缺点 (PPT, Page 36):
-  - 复杂性高，训练时间更长。
-  - 可解释性差。
-
-#### 集成学习总结 (Summary of Ensemble Learning) (PPT, Page 37)
-
-- **提高性能 (Improve Performance):** 集成学习旨在通过结合多个模型的预测来提高机器学习模型的**准确率 (accuracy)**、**鲁棒性 (robustness)** 和**泛化能力 (generalization ability)**。
-
-
+- **核心概念**（Page 30）  
+  - **概率（Probability）**：$p \in [0, 1]$。  
+  - **几率（Odds）**：$\frac{p}{1-p}$。  
+  - **对数几率（Log-odds）**：$ \ln\left(\frac{p}{1-p}\right) $。  
+- **性能评估**（Page 34-35）  
+  - **AIC（Akaike Information Criterion）**：  
+    $ AIC = 2k - 2\ln(\hat{L}) $ 
+    衡量模型拟合与复杂度，值越小越好。  
+  - **BIC（Bayesian Information Criterion）**：  
+   $ BIC = \ln(n)k - 2\ln(\hat{L}) $ 
+    对模型复杂度惩罚更强。  
+- **与线性回归对比**（Page 37）  
+  | 线性回归     | 逻辑回归       |
+  | ------------ | -------------- |
+  | 连续目标变量 | 二分类目标变量 |
+  | 最小化MSE    | 最大化似然函数 |
+
+---
+
+#### 4. **分类模型性能评估**（Page 48-59）
+- **混淆矩阵（Confusion Matrix）**（Page 48）  
+  | 预测\实际 | 正类（Fraud）        | 负类（No Fraud）     |
+  | --------- | -------------------- | -------------------- |
+  | 正类      | TP（True Positive）  | FP（False Positive） |
+  | 负类      | FN（False Negative） | TN（True Negative）  |
+- **关键指标**：  
+  - **准确率（Accuracy）**（Page 49-50）：  
+    $ \frac{TP + TN}{TP + FP + FN + TN} $
+  - **召回率（Recall/Sensitivity）**（Page 51）：  
+    $ \frac{TP}{TP + FN} $（强调漏检风险）。  
+  - **精确率（Precision）**（Page 52）：  
+    $ \frac{TP}{TP + FP}$（强调误报风险）。  
+  - **F1分数（F1 Score）**（Page 53）：  
+    $ 2 \times \frac{Precision \times Recall}{Precision + Recall} $
+  - **ROC-AUC**（Page 56-59）：  
+    - **TPR（True Positive Rate）** = Recall。  
+    - **FPR（False Positive Rate）** = $ \frac{FP}{FP + TN} $。  
+    - AUC=1表示完美分类，AUC=0.5表示随机猜测。  
+
+---
+
+#### 5. **决策树（Decision Tree）**（Page 77-89）
+- **分裂标准**（Page 80）  
+  - **分类树**：基尼指数（Gini Index）或熵（Entropy）。  
+     $\text{Gini} = 2p_G p_B$, $\quad \text{Entropy} = -p_G \log_2 p_G - p_B \log_2 p_B $  
+  - **回归树**：最小化MSE（Page 83）。  
+- **过拟合与剪枝**（Page 86-87）  
+  - **预剪枝（Pre-pruning）**：提前限制树深度或最小样本数。  
+  - **后剪枝（Post-pruning）**：通过验证集选择最优树结构。  
+- **优缺点**（Page 89）  
+  - 优点：易解释（Interpretability）、支持非线性。  
+  - 缺点：不稳定（Unstable）、易过拟合。  
+
+---
+
+#### 6. **集成学习（Ensemble Learning）**（Page 92-98）
+- **Bagging**（Page 94-97）  
+  - **Bootstrap采样**：有放回抽样生成多训练集（Page 95）。  
+  - **随机森林（Random Forest）**：同质决策树的多数投票（Page 98）。  
+- **Boosting**（Page 94）  
+  - **AdaBoost/Gradient Boosting**：串行训练，修正前序模型错误。  
+- **Stacking**（Page 94）  
+  - 异质模型（如线性回归+决策树）通过元模型整合预测。  
+
+---
+
+#### 7. **R代码实现**（Page 61-75）
+- **数据分区**（Page 61-63）：  
+  ```R
+  library(caret)
+  train_index <- createDataPartition(data$Class, p=0.8, list=F)
+  ```
+- **不平衡处理**（Page 64-68）：  
+  ```R
+  # SMOTE
+  library(smotefamily)
+  train_smote <- SMOTE(X=data[,-31], target=data$Class)
+  ```
+- **逻辑回归**（Page 74-75）：  
+  ```R
+  fit.lm <- glm(Class ~ ., data=train_un, family=binomial)
+  ```
+
+---
+
+#### 8. **案例研究（Case Study）**（Page 70-73）
+- **Beneish模型**（Page 71）：  
+  - 八变量财务欺诈检测模型，如DSRI（Days Sales in Receivables Index）。  
+- **逻辑回归结果**（Page 73）：  
+  - GMI（Gross Margin Index）对欺诈影响显著（Exp(B)=8.316, p=0.007）。  
+
+---
+
+#### 9. **补充知识点**
+- **数据分区比例**（Page 40）：  
+  - 训练集（70%）、验证集（30%）、测试集（30%）。  
+- **验证集作用**（Page 43-45）：  
+  - 调参（如决策树剪枝）和防止过拟合。  
 
 ## 第七章
 
@@ -2083,68 +1917,29 @@ tags: [考试]
 
   - 使用带有标签（已知欺诈或非欺诈）的数据集来训练模型。
   - 模型学习输入特征与输出标签之间的映射关系。（来源：PPT第34页）
-  
 - 模型选择 (Model Selection)
 
   - 选择适合特定欺诈检测任务的机器学习模型。
   - 常见的模型包括逻辑回归、决策树、支持向量机、神经网络等。（来源：PPT第34页）
-  
 - 模型评估 (Model Evaluation)
 
   - 使用各种指标来评估模型的性能。
-
   - 混淆矩阵 (Confusion Matrix)
-
+  
     - 用于展示分类模型性能的表格。
   - **真阳性 (True Positives, TP)**：实际是欺诈，模型预测为欺诈。
     - **真阴性 (True Negatives, TN)**：实际不是欺诈，模型预测为非欺诈。
   - **假阳性 (False Positives, FP)**：实际不是欺诈，模型预测为欺诈（I类错误）。
     - **假阴性 (False Negatives, FN)**：实际是欺诈，模型预测为非欺诈（II类错误）。（来源：PPT第35-36页）
-    
-  - 准确率 (Accuracy)
-  
-    ：
-
-    - 所有正确预测的样本占总样本的比例。
-  - 公式：Accuracy=TP+TN+FP+FNTP+TN
-    - 在欺诈检测中，由于欺诈样本通常很少，准确率可能不是最好的指标。（来源：PPT第37页）
-
-  - 精确率 (Precision)
-  
-    - 在所有被模型预测为欺诈的样本中，实际是欺诈的比例。
-  - 衡量模型识别欺诈的准确性，减少误报。
-    - 公式：Precision=TP+FPTP（来源：PPT第38页）
-  
-  - 召回率 (Recall) / 敏感度 (Sensitivity) / 真阳性率 (True Positive Rate, TPR)
-
-    - 在所有实际是欺诈的样本中，被模型正确识别出来的比例。
-    - 衡量模型发现欺诈的能力，减少漏报。
-    - 公式：Recall=TP+FNTP（来源：PPT第39页）
-  
-  - F1分数 (F1-score)
-
-    - 精确率和召回率的调和平均值。
-  - 综合考虑了精确率和召回率，尤其在类别不平衡的数据集中非常有用。
-    - 公式：F1=2×Precision+RecallPrecision×Recall（来源：PPT第40页）
-    
-  - ROC曲线 (Receiver Operating Characteristic Curve)
-
-    - 绘制了真阳性率 (TPR) 和假阳性率 (False Positive Rate, FPR) 在不同分类阈值下的关系。
-  - **假阳性率 (FPR)**：所有实际不是欺诈的样本中，被模型错误预测为欺诈的比例。
-    - 公式：FPR=FP+TNFP
   - 曲线越靠近左上角，模型性能越好。（来源：PPT第41-42页）
-  
   - AUC (Area Under the Curve)
-  
   - ROC曲线下的面积。
     - AUC值越大，模型性能越好。
   - AUC为1表示完美分类器，AUC为0.5表示随机分类器。（来源：PPT第43页）
-    
   - KS统计量 (Kolmogorov-Smirnov Statistic)
   
     - 衡量好客户和坏客户累计分布之间最大距离的指标。
   - KS值越大，模型区分好坏客户的能力越强。（来源：PPT第44-45页）
-  
 - 升力图 (Lift Chart)
   
   - 衡量模型相对于随机猜测的提升效果。
@@ -2253,3 +2048,56 @@ tags: [考试]
   - R2 越高，模型对输出变量的解释能力越强。
   - 公式：R2=1−SStotSSres，其中 SSres 是残差平方和，SStot 是总平方和。
   - R2 可以帮助我们比较当前模型与基线值（例如均值）的优劣。（来源：PPT第73-74页）
+
+## 2024 
+
+### 题目解答步骤（使用 **Gini 不纯度** 作为划分标准）
+
+> **记号**
+>
+> - $N$：样本总数（本题 $N=14$）
+> - $N_{\text{Yes}},N_{\text{No}}$：违约 (Yes) / 未违约 (No) 样本数
+> - $p_{\text{Yes}}=N_{\text{Yes}}/N,;p_{\text{No}}=N_{\text{No}}/N$
+> - **Gini 不纯度**：$ \displaystyle G = 1-\sum_i p_i^{2}=1-p_{\text{Yes}}^{2}-p_{\text{No}}^{2}$
+> - **加权 Gini**：$ \displaystyle G_{\text{split}}=\frac{N_L}{N}G_L+\frac{N_R}{N}G_R$
+> - **Gini 降低量**：$ \displaystyle \Delta G = G_{\text{parent}}-G_{\text{split}}$
+
+------
+
+#### 0. 计算父节点 Gini
+
+|      | Yes  | No   | 合计 |
+| ---- | ---- | ---- | ---- |
+| 计数 | 5    | 9    | 14   |
+
+- $p_{\text{Yes}}=\tfrac{5}{14}=0.357$
+- $p_{\text{No}}=\tfrac{9}{14}=0.643$
+
+$G_{\text{parent}} = 1-0.357^{2}-0.643^{2}=0.459$
+
+#### 1. Feature 1：Credit Score < 700
+
+| 子集        | 样本数 | Yes  | No   | $Gini$                      |
+| ----------- | ------ | ---- | ---- | --------------------------- |
+| 左（< 700） | 2      | 2    | 0    | $1-1^{2}-0^{2}=0.000$       |
+| 右（≥ 700） | 12     | 3    | 9    | $1-0.25^{2}-0.75^{2}=0.375$ |
+
+$\begin{aligned} G_{\text{split}} &= \frac{2}{14}\times0 + \frac{12}{14}\times0.375 = 0.321 \\ \Delta G_{\text{CreditScore}} &= 0.459-0.321 = 0.138 \end{aligned}$
+
+------
+
+#### 2. Feature 2：Debt‑to‑income ratio < 0.3
+
+| 子集           | 样本数 | Yes  | No   | $Gini$                                                       |
+| -------------- | ------ | ---- | ---- | ------------------------------------------------------------ |
+| 左（DTI<0.30） | 6      | 0    | 6    | $1-0^{2}-1^{2}=0.000$                                        |
+| 右（DTI≥0.30） | 8      | 5    | 3    | $1-\bigl(\tfrac{5}{8}\bigr)^{2}-\bigl(\tfrac{3}{8}\bigr)^{2}=0.469$ |
+
+$\begin{aligned} G_{\text{split}} &= \frac{6}{14}\times0 + \frac{8}{14}\times0.469 = 0.268 \\ \Delta G_{\text{DTI}} &= 0.459-0.268 = 0.191 \end{aligned}$
+
+------
+
+#### 3. 根节点特征选择
+
+- $s\Delta G_{\text{DTI}} = 0.191$ **大于** $\Delta G_{\text{CreditScore}} = 0.138$
+- 因此，**应选择 “Debt‑to‑income ratio < 0.3” 作为根节点的划分特征**，因为它带来了更大的纯度提升，能够更有效地区分是否违约。
